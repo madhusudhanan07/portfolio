@@ -1,0 +1,292 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0c0c14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .scene {
+    perspective: 900px;
+    cursor: pointer;
+  }
+
+  .card-3d {
+    width: 280px;
+    height: 360px;
+    border-radius: 24px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.08s ease;
+    will-change: transform;
+  }
+
+  /* Base photo layer */
+  .layer-photo {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(124, 92, 252, 0.5);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.6),
+      0 0 40px rgba(124, 92, 252, 0.3),
+      inset 0 0 30px rgba(124, 92, 252, 0.05);
+  }
+
+  .layer-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+
+  /* Gradient overlay */
+  .layer-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(170deg, rgba(124, 92, 252, 0.15) 0%, transparent 50%, rgba(0, 212, 170, 0.1) 100%);
+    border-radius: 24px;
+  }
+
+  /* Name overlay at bottom */
+  .layer-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px 20px 20px;
+    background: linear-gradient(transparent, rgba(8, 8, 18, 0.95));
+    border-radius: 0 0 24px 24px;
+    transform: translateZ(30px);
+  }
+
+  .layer-name h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  .layer-name p {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #00d4aa;
+    margin-top: 4px;
+  }
+
+  /* 3D floating chips — pop out toward viewer */
+  .chip-3d {
+    position: absolute;
+    background: rgba(12, 12, 24, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+    transform: translateZ(60px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease;
+  }
+
+  .chip-3d .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .c1 {
+    top: -16px;
+    left: -30px;
+  }
+
+  .c2 {
+    top: -16px;
+    right: -30px;
+  }
+
+  .c3 {
+    top: 40%;
+    left: -60px;
+    transform: translateZ(50px);
+  }
+
+  .c4 {
+    top: 40%;
+    right: -55px;
+    transform: translateZ(50px);
+  }
+
+  /* Glare layer */
+  .layer-glare {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 60%);
+    pointer-events: none;
+    transition: opacity 0.1s;
+    transform: translateZ(5px);
+  }
+
+  /* Outer glow ring */
+  .glow-ring {
+    position: absolute;
+    inset: -12px;
+    border-radius: 34px;
+    border: 1px solid rgba(124, 92, 252, 0.2);
+    pointer-events: none;
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes ringPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(124, 92, 252, 0.2);
+    }
+
+    50% {
+      box-shadow: 0 0 40px rgba(124, 92, 252, 0.5);
+    }
+  }
+
+  /* Particles */
+  .particles {
+    position: absolute;
+    inset: -40px;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .p {
+    position: absolute;
+    border-radius: 50%;
+    animation: pFloat linear infinite;
+  }
+
+  @keyframes pFloat {
+    0% {
+      transform: translateY(0);
+      opacity: 0.6;
+    }
+
+    100% {
+      transform: translateY(-80px);
+      opacity: 0;
+    }
+  }
+
+  .hint {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.25);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+</style>
+
+<div style="display:flex;flex-direction:column;align-items:center;padding:60px 40px;">
+  <div class="scene" id="scene">
+    <div class="card-3d" id="card">
+      <div class="glow-ring"></div>
+
+      <div class="particles" id="pts"></div>
+
+      <div class="layer-photo">
+        <img src="C:\Users\Madhusudhanan\projects\portfolio\public\madhu.photo.png" alt="Madhusudhanan" />
+      </div>
+
+      <div class="layer-glare" id="glare"></div>
+
+      <div class="layer-name">
+        <h2>MADHUSUDHANAN</h2>
+
+      </div>
+
+      <div class="chip-3d c1"><span class="dot" style="background:#7c5cfc;"></span>Claude API</div>
+      <div class="chip-3d c2"><span class="dot" style="background:#00d4aa;"></span>Gemini API</div>
+      <div class="chip-3d c3"><span class="dot" style="background:#ff7043;"></span>React</div>
+      <div class="chip-3d c4"><span class="dot" style="background:#7c5cfc;"></span>Firebase</div>
+    </div>
+  </div>
+  <div class="hint">MOVE MOUSE OVER CARD</div>
+</div>
+
+<script>
+  const scene = document.getElementById('scene');
+  const card = document.getElementById('card');
+  const glare = document.getElementById('glare');
+
+  scene.addEventListener('mousemove', e => {
+    const rect = scene.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+
+    const rotX = -dy * 22;
+    const rotY = dx * 22;
+
+    card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.04,1.04,1.04)`;
+
+    const gx = (dx + 1) / 2 * 100;
+    const gy = (dy + 1) / 2 * 100;
+    glare.style.background = `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.15), transparent 65%)`;
+  });
+
+  scene.addEventListener('mouseleave', () => {
+    card.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+    glare.style.background = 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), transparent 60%)';
+  });
+
+  // Particles
+  const pts = document.getElementById('pts');
+  const cols = ['#7c5cfc', '#00d4aa', '#ff7043', '#ffffff'];
+  for (let i = 0; i < 20; i++) {
+    const d = document.createElement('div');
+    d.className = 'p';
+    const s = Math.random() * 3 + 1.5;
+    d.style.cssText = `
+    width:${s}px;height:${s}px;
+    background:${cols[Math.floor(Math.random() * 4)]};
+    left:${Math.random() * 100}%;
+    top:${Math.random() * 100}%;
+    opacity:${Math.random() * 0.5 + 0.2};
+    animation-duration:${Math.random() * 4 + 3}s;
+    animation-delay:${Math.random() * 4}s;
+  `;
+    pts.appendChild(d);
+  }
+</script>
