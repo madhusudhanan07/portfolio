@@ -1047,17 +1047,13 @@ const Contact = () => {
                 </a>
               </Reveal>
 
-              <div className="flex gap-4">
-                <Reveal x={-20} delay={0.7}>
-                  <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
-                    <Linkedin className="w-6 h-6 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                  </a>
-                </Reveal>
-                <Reveal x={-20} delay={0.8}>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
-                    <Github className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
-                  </a>
-                </Reveal>
+              <div className="flex gap-4 pt-4">
+                <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
+                  <Linkedin className="w-6 h-6 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                </a>
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
+                  <Github className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+                </a>
               </div>
             </div>
           </div>
