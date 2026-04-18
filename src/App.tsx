@@ -160,10 +160,30 @@ const CERTIFICATIONS: Certification[] = [
 ];
 
 const SERVICES = [
-  { title: 'Full-Stack Development', icon: <Code2 />, desc: 'Building scalable, high-performance web applications from scratch.' },
-  { title: 'AI Integration', icon: <Cpu />, desc: 'Leveraging LLMs and predictive models to create intelligent user experiences.' },
-  { title: 'UI/UX Architecture', icon: <Palette />, desc: 'Designing interfaces that are as functional as they are beautiful.' },
-  { title: 'Cloud Infrastructure', icon: <Globe />, desc: 'Deploying and managing robust cloud solutions for modern businesses.' },
+  {
+    title: 'Full-Stack Development',
+    icon: <Code2 />,
+    desc: 'Building scalable, high-performance web applications from scratch.',
+    features: ['Custom Web Apps', 'RESTful APIs', 'Database Design', 'System Architecture']
+  },
+  {
+    title: 'AI Integration',
+    icon: <Cpu />,
+    desc: 'Leveraging LLMs and predictive models to create intelligent user experiences.',
+    features: ['LLM Implementation', 'Smart Chatbots', 'Predictive Models', 'Workflow Automation']
+  },
+  {
+    title: 'UI/UX Architecture',
+    icon: <Palette />,
+    desc: 'Designing interfaces that are as functional as they are beautiful.',
+    features: ['Wireframing', 'Design Systems', 'Interactive Prototypes', 'User Research']
+  },
+  {
+    title: 'Cloud Infrastructure',
+    icon: <Globe />,
+    desc: 'Deploying and managing robust cloud solutions for modern businesses.',
+    features: ['Serverless Deployments', 'CI/CD Pipelines', 'Firebase Integration', 'Vercel Mastery']
+  },
 ];
 
 // --- Components ---
@@ -278,7 +298,7 @@ const Navbar = () => {
           className="text-2xl font-display font-black tracking-tighter flex items-center gap-3"
         >
           <div className="w-10 h-10 bg-accent-purple rounded-lg flex items-center justify-center text-surface text-base font-bold">M</div>
-          <span className="hidden sm:inline font-black tracking-tight text-white uppercase">MADHUSUDHANAN N A</span>
+          <span className="hidden sm:inline text-white">MADHUSUDHANAN N A</span>
         </motion.div>
 
         <div className="hidden md:flex items-center gap-2 glass p-1.5 rounded-full border-white/10 shadow-2xl">
@@ -326,24 +346,27 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="absolute top-full left-0 right-0 bg-surface/95 backdrop-blur-md border-b border-white/5 p-8 flex flex-col gap-6 md:hidden overflow-hidden"
+            className="md:hidden bg-surface/95 backdrop-blur-2xl border-b border-white/5"
           >
-            {['ABOUT', 'SKILLS', 'PROJECTS', 'CONTACT'].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-2xl font-black tracking-tighter text-white"
-                onClick={() => setIsOpen(false)}
-              >
-                {item}
-              </a>
-            ))}
+            <div className="flex flex-col p-6 gap-6">
+              {['Home', 'About', 'Services', 'Projects', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm font-black uppercase tracking-[0.2em] text-white py-2"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -372,43 +395,6 @@ const ThreeDCard = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-8 w-full group/hero">
       <div className="relative w-full aspect-[4/5] perspective-1000">
-        {/* Floating Tech Labels - 3D adjusted */}
-        <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -left-6 top-[15%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(60px)' }}
-        >
-          <span className="w-2 h-2 rounded-full bg-[#61dafb]" /> React
-        </motion.div>
-
-        <motion.div
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute -right-6 top-[15%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(60px)' }}
-        >
-          <span className="w-2 h-2 rounded-full bg-[#ffca28]" /> Firebase
-        </motion.div>
-
-        <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute -left-10 bottom-[25%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(50px)' }}
-        >
-          <span className="w-2 h-2 rounded-full bg-[#ffffff]" /> Vercel
-        </motion.div>
-
-        <motion.div
-          animate={{ y: [0, -7, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-          className="absolute -right-8 bottom-[25%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(50px)' }}
-        >
-          <span className="w-2 h-2 rounded-full bg-[#f7df1e]" /> JavaScript
-        </motion.div>
-
         {/* 3D Card Base */}
         <motion.div
           onMouseMove={onMouseMove}
@@ -512,7 +498,11 @@ const ThreeDCard = () => {
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden mesh-gradient">
+    <section id="home" className="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden mesh-gradient">
+      {/* Subtle animated glowing blobs */}
+      <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-accent-purple/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+      <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }} className="absolute bottom-1/4 right-10 w-[600px] h-[600px] bg-accent-blue/10 blur-[130px] rounded-full pointer-events-none mix-blend-screen" />
+
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className="lg:col-span-7">
           <Reveal y={30} duration={0.8} delay={0.2}>
@@ -551,15 +541,47 @@ const Hero = () => {
                 VIEW PROJECTS <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </a>
-            <button className="flex items-center gap-2 px-10 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white">
+            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-10 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white">
               DOWNLOAD RESUME <Download className="w-4 h-4" />
-            </button>
+            </a>
+          </Reveal>
+
+          <Reveal y={20} duration={0.8} delay={1.0} className="mt-12 pt-8 border-t border-white/5 flex gap-10 items-center w-max">
+            <div className="flex flex-col">
+              <span className="text-3xl font-black text-white">4+</span>
+              <span className="text-[9px] font-bold text-gray-500 tracking-[0.2em] uppercase mt-1">Real Projects</span>
+            </div>
+            <div className="w-[1px] h-10 bg-white/10" />
+            <div className="flex flex-col">
+              <span className="text-3xl font-black text-accent-purple">4+</span>
+              <span className="text-[9px] font-bold text-gray-500 tracking-[0.2em] uppercase mt-1">Certifications</span>
+            </div>
+            <div className="w-[1px] h-10 bg-white/10" />
+            <div className="flex flex-col">
+              <span className="text-3xl font-black text-white">2</span>
+              <span className="text-[9px] font-bold text-gray-500 tracking-[0.2em] uppercase mt-1">Years Coding</span>
+            </div>
           </Reveal>
         </div>
 
-        <Reveal scale={0.9} duration={1.2} delay={0.4} className="lg:col-span-5 relative lg:translate-x-12">
+        {/* Cinematic 3D Tumble Entrance */}
+        <motion.div
+          initial={{ scale: 2.8, opacity: 0, x: "-100vw", y: -100, rotateY: -720, rotateX: 360, rotateZ: -180 }}
+          animate={{
+            scale: [2.8, 0.95, 1],
+            opacity: 1,
+            x: ["-100vw", 0, 0],
+            y: [-100, 0, 0],
+            rotateY: [-720, 15, 0],
+            rotateX: [360, -10, 0],
+            rotateZ: [-180, 5, 0]
+          }}
+          transition={{ duration: 2.2, delay: 6.4, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:col-span-5 relative lg:translate-x-12 z-50 origin-center"
+          style={{ perspective: 1500, transformStyle: 'preserve-3d' }}
+        >
           <ThreeDCard />
-        </Reveal>
+        </motion.div>
       </div>
 
       <Reveal y={20} delay={1.5} className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
@@ -647,13 +669,13 @@ const BentoAbout = () => {
             <p className="text-sm text-gray-400">Executive member contributing to mathematical research and events.</p>
           </Reveal>
 
-          <Reveal y={40} delay={0.4} duration={1} className="md:col-span-8 bento-card p-0 overflow-hidden relative group">
+          <Reveal scale={0.8} y={0} delay={0.4} duration={1} className="md:col-span-8 bento-card p-0 overflow-hidden relative group">
             <img
               src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200"
               alt="Tech Space"
-              className="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+              className="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-transform duration-[1.5s] scale-125 group-hover:scale-100 ease-[cubic-bezier(0.2,1,0.3,1)]"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent p-12 flex flex-col justify-center">
+            <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent p-12 flex flex-col justify-center transition-opacity duration-700">
               <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/5 rounded-xl"><Mail className="w-5 h-5 text-accent-purple" /></div>
@@ -673,6 +695,8 @@ const BentoAbout = () => {
 };
 
 const Services = () => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
     <section className="py-32 px-6 bg-white/[0.01]">
       <div className="max-w-7xl mx-auto">
@@ -682,19 +706,74 @@ const Services = () => {
           subtitle="Specialized solutions tailored for modern digital challenges."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="w-full max-w-4xl mx-auto flex flex-col gap-4">
           {SERVICES.map((service, i) => (
-            <Reveal
-              key={i}
-              y={30}
-              delay={i * 0.1}
-              className="glass p-10 rounded-[2.5rem] glass-hover group"
-            >
-              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent-purple/20 transition-colors">
-                {React.cloneElement(service.icon as React.ReactElement, { className: "w-6 h-6 text-accent-purple" })}
-              </div>
-              <h4 className="text-xl font-black mb-4 tracking-tight text-white uppercase">{service.title}</h4>
-              <p className="text-sm text-gray-500 leading-relaxed font-sm">{service.desc}</p>
+            <Reveal key={i} y={20} delay={i * 0.1} className="w-full">
+              <motion.div
+                layout
+                onMouseEnter={() => setHoveredIndex(i)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                className={cn(
+                  "relative overflow-hidden transition-all duration-300 rounded-3xl cursor-pointer group",
+                  hoveredIndex === i ? "bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-lg" : "bg-white/[0.01] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                )}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="p-8 md:px-12 flex flex-col justify-center">
+                  <div className="flex justify-between items-center w-full">
+                    <h4 className={cn(
+                      "text-xl md:text-3xl font-black tracking-tight uppercase transition-colors duration-300",
+                      hoveredIndex === i ? "text-white" : "text-gray-500"
+                    )}>
+                      {service.title}
+                    </h4>
+
+                    <div className={cn(
+                      "transition-all duration-300 transform flex items-center justify-center rounded-full w-12 h-12 border border-white/10 shrink-0",
+                      hoveredIndex === i ? "bg-accent-purple/10 rotate-90 scale-110 border-accent-purple/30 shadow-[0_0_20px_rgba(124,92,252,0.2)]" : "bg-white/5"
+                    )}>
+                      <ChevronRight className={cn("w-5 h-5 transition-colors duration-300", hoveredIndex === i ? "text-accent-purple" : "text-gray-500")} />
+                    </div>
+                  </div>
+
+                  <AnimatePresence>
+                    {hoveredIndex === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{
+                          height: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+                          opacity: { duration: 0.25, delay: 0.1 }
+                        }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-8 pt-8 border-t border-white/10 flex flex-col md:flex-row gap-8 items-start">
+                          <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 border border-white/10 transition-all duration-300 group-hover:bg-accent-purple/10 group-hover:border-accent-purple/30">
+                            {React.cloneElement(service.icon as React.ReactElement, { className: "w-8 h-8 text-white transition-all duration-300 group-hover:text-accent-purple group-hover:scale-110" })}
+                          </div>
+                          <div className="flex flex-col gap-6 w-full">
+                            <p className="text-base text-gray-300 leading-relaxed font-medium max-w-2xl">{service.desc}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 mt-2">
+                              {service.features.map((feature, idx) => (
+                                <motion.div
+                                  key={idx}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.1 + (idx * 0.05), duration: 0.3 }}
+                                  className="flex items-center gap-3 pl-4 border-l border-accent-purple/30 text-[11px] font-bold tracking-widest text-gray-400 uppercase"
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-purple" /> {feature}
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
             </Reveal>
           ))}
         </div>
@@ -1356,15 +1435,15 @@ const CodeTyping = () => {
       </div>
       <div className="pt-8 font-mono text-left min-h-[220px]">
         {lines.map((line, i) => (
-          <motion.div 
-            key={i} 
-            initial={{ opacity: 0, x: -10 }} 
-            animate={{ opacity: 1, x: 0 }} 
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.2 }}
             className="whitespace-pre"
           >
             <span className="text-gray-600 mr-4 select-none opacity-50">{i + 1}</span>
-            <span dangerouslySetInnerHTML={{ 
+            <span dangerouslySetInnerHTML={{
               __html: line
                 .replace(/import|from|const|new/g, '<span class="text-[#c678dd]">$&</span>')
                 .replace(/'[^']*'/g, '<span class="text-[#98c379]">$&</span>')
@@ -1374,10 +1453,10 @@ const CodeTyping = () => {
             }} />
           </motion.div>
         ))}
-        <motion.div 
-          animate={{ opacity: [1, 0, 1] }} 
-          transition={{ duration: 0.8, repeat: Infinity }} 
-          className="inline-block w-2 h-4 bg-[#61afef] ml-2 mt-1 align-middle" 
+        <motion.div
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ duration: 0.8, repeat: Infinity }}
+          className="inline-block w-2 h-4 bg-[#61afef] ml-2 mt-1 align-middle"
         />
       </div>
     </div>
