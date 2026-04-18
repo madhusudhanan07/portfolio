@@ -265,7 +265,7 @@ const SectionHeader = ({ title, label, subtitle }: { title: string; label?: Reac
       {label && <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] mb-4 block whitespace-nowrap">{label}</span>}
     </Reveal>
     <Reveal mask duration={1} delay={0.2}>
-      <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-6 text-white uppercase">{title}</h2>
+      <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-6 text-white uppercase">{title}</h2>
     </Reveal>
     {subtitle && (
       <Reveal y={20} delay={0.4} duration={0.8}>
@@ -295,9 +295,9 @@ const Navbar = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-2xl font-display font-black tracking-tighter flex items-center gap-3"
+          className="text-xl font-display font-black tracking-tighter flex items-center gap-3"
         >
-          <div className="w-10 h-10 bg-accent-purple rounded-lg flex items-center justify-center text-surface text-base font-bold">M</div>
+          <div className="w-8 h-8 bg-accent-purple rounded-lg flex items-center justify-center text-surface text-sm font-bold">M</div>
           <span className="hidden sm:inline text-white">MADHUSUDHANAN N A</span>
         </motion.div>
 
@@ -518,7 +518,7 @@ const Hero = () => {
           </Reveal>
 
           <Reveal y={40} duration={1} delay={0.3} mask>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5vw] xl:text-[3.8vw] font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
               MADHUSUDHANAN N A
             </h1>
           </Reveal>
@@ -580,7 +580,9 @@ const Hero = () => {
           className="lg:col-span-5 relative lg:translate-x-12 z-50 origin-center"
           style={{ perspective: 1500, transformStyle: 'preserve-3d' }}
         >
-          <ThreeDCard />
+          <div className="max-w-[450px] mx-auto lg:ml-auto">
+            <ThreeDCard />
+          </div>
         </motion.div>
       </div>
 
@@ -608,7 +610,7 @@ const BentoAbout = () => {
   }, []);
 
   return (
-    <section id="about" className="py-32 px-6">
+    <section id="about" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           label={
@@ -654,14 +656,14 @@ const BentoAbout = () => {
             </div>
           </Reveal>
 
-          <Reveal y={40} delay={0.2} duration={1} className="md:col-span-4 bento-card bg-accent-purple/5 border-accent-purple/20 p-10">
+          <Reveal y={40} delay={0.2} duration={1} className="md:col-span-4 bento-card bg-accent-purple/5 border-accent-purple/20 p-8">
             <Award className="w-10 h-10 text-accent-purple mb-6" />
             <h4 className="text-xl font-black mb-2 text-white uppercase">Top Honors</h4>
             <p className="text-sm text-gray-400 mb-6 font-medium">2nd Prize Poster Design NEXORA 2025. Recognized for visual excellence and technical clarity.</p>
             <div className="text-xs font-bold text-accent-purple uppercase tracking-[0.2em]">Awarded April 2025</div>
           </Reveal>
 
-          <Reveal y={40} delay={0.3} duration={1} className="md:col-span-4 bento-card p-10">
+          <Reveal y={40} delay={0.3} duration={1} className="md:col-span-4 bento-card p-8">
             <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Current Role</div>
             <h4 className="text-2xl font-black mb-2 text-white">UiPath Club Secretary</h4>
             <p className="text-sm text-gray-400 mb-6">Leading automation initiatives and technical communities at PSNA College.</p>
@@ -786,7 +788,7 @@ const Skills = () => {
   const [activeTab, setActiveTab] = useState<'frontend' | 'backend' | 'database-services' | 'tools' | 'deployment' | 'soft-skills'>('frontend');
 
   return (
-    <section id="skills" className="py-32 px-6">
+    <section id="skills" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <SectionHeader
@@ -828,7 +830,7 @@ const Skills = () => {
                 key={`${activeTab}-${skill.name}`}
                 y={30}
                 delay={i * 0.05}
-                className="glass p-10 rounded-[2.5rem] flex flex-col items-center justify-center gap-6 glass-hover group h-full min-h-[180px]"
+                className="glass p-8 rounded-[2rem] flex flex-col items-center justify-center gap-6 glass-hover group h-full min-h-[160px]"
               >
                 {skill.logo ? (
                   <>
@@ -858,7 +860,7 @@ const Skills = () => {
 
 const Projects = () => {
   return (
-    <section id="projects" className="py-32 px-6 bg-white/[0.01]">
+    <section id="projects" className="py-24 px-6 bg-white/[0.01]">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           label="Portfolio"
@@ -872,7 +874,7 @@ const Projects = () => {
               key={project.title}
               y={40}
               delay={i * 0.15}
-              className="glass rounded-[2.5rem] overflow-hidden group flex flex-col glass-hover"
+              className="glass rounded-[2rem] overflow-hidden group flex flex-col glass-hover"
             >
               <div className="relative aspect-[16/9] bg-white/[0.03] border-b border-white/5 flex items-center justify-center overflow-hidden">
                 <img
@@ -893,7 +895,7 @@ const Projects = () => {
                 </div>
               </div>
 
-              <div className="p-8 flex flex-col flex-1">
+              <div className="p-6 flex flex-col flex-1">
                 <h3 className="text-2xl font-black mb-3 tracking-tight text-white uppercase">{project.title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed mb-6 font-medium">{project.description}</p>
 
@@ -941,7 +943,7 @@ const Projects = () => {
 
 const Certifications = () => {
   return (
-    <section id="certifications" className="py-32 px-6">
+    <section id="certifications" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           label="Validation"
@@ -954,7 +956,7 @@ const Certifications = () => {
               key={i}
               y={30}
               delay={i * 0.12}
-              className={cn("p-10 glass rounded-[2.5rem] border-l-4 flex flex-col gap-2 glass-hover border-white/5", cert.color)}
+              className={cn("p-8 glass rounded-[2rem] border-l-4 flex flex-col gap-2 glass-hover border-white/5", cert.color)}
             >
               <div className="flex justify-between items-start mb-10">
                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
@@ -1010,7 +1012,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-32 px-6">
+    <section id="contact" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
           {/* Left Side: Info */}
@@ -1020,7 +1022,7 @@ const Contact = () => {
                 <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] block">Get in Touch</span>
               </Reveal>
               <Reveal mask duration={1} delay={0.2}>
-                <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white">
+                <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">
                   Let's <br /> build the <br />
                   <span className="text-accent-blue font-black uppercase">future.</span>
                 </h2>
@@ -1062,7 +1064,7 @@ const Contact = () => {
           </div>
 
           {/* Right Side: Form */}
-          <Reveal y={40} delay={0.4} className="bento-card p-10 lg:p-12 border-white/5">
+          <Reveal y={40} delay={0.4} className="bento-card p-8 lg:p-10 border-white/5">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
