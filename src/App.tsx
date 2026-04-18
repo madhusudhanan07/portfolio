@@ -517,8 +517,9 @@ const Hero = () => {
           </Reveal>
 
           <Reveal y={40} duration={1} delay={0.3} mask>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase">
-              MADHUSUDHANAN N A
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter uppercase whitespace-nowrap">
+              <span className="text-gradient">MADHUSUDHANAN </span>
+              <span className="text-white/20">N A</span>
             </h1>
           </Reveal>
 
@@ -1368,32 +1369,30 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
             <motion.div key="split" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 items-center justify-center px-4" style={{ perspective: 1000 }}>
               {/* Left — role */}
-              <div className="flex flex-col items-center md:items-end md:pr-12 md:border-r border-white/10 text-center md:text-right">
-                <span className="text-[10px] sm:text-[11px] font-black tracking-[0.45em] text-gray-600 uppercase mb-4 opacity-70">Currently</span>
+              <div className="flex flex-col items-center md:items-end md:pr-16 md:border-r border-white/10 text-center md:text-right">
+                <span className="text-[11px] sm:text-[13px] font-black tracking-[0.5em] text-gray-500 uppercase mb-4 opacity-80">Currently</span>
                 <AnimatePresence mode="wait">
                   <motion.p key={roleIndex} 
                     initial={{ opacity: 0, scale: 0.9, y: 10 }} 
                     animate={{ opacity: 1, scale: 1, y: 0 }} 
                     exit={{ opacity: 0, scale: 1.1, y: -10 }} 
                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                    className="text-2xl sm:text-3xl lg:text-4xl font-black text-white/80 tracking-tight leading-none min-h-[1.2em]">
+                    className="text-2xl sm:text-3xl lg:text-4xl font-black text-white/90 tracking-tight leading-none min-h-[1.2em]">
                     {roles[roleIndex]}
                   </motion.p>
                 </AnimatePresence>
               </div>
               {/* Right — name with slow glow reveal */}
-              <div className="flex flex-col items-center md:items-start md:pl-12 text-center md:text-left">
-                <span className="text-[10px] sm:text-[11px] font-black tracking-[0.45em] text-gray-600 uppercase block mb-4 opacity-70">Portfolio of</span>
-                <div className="font-black tracking-widest leading-[1.1] relative group" style={{ fontSize: 'clamp(1.5rem, 6vw, 3.8rem)' }}>
-                  <div className="flex flex-wrap md:flex-nowrap justify-center md:justify-start items-center gap-y-2">
-                    <LetterReveal text="MADHUSUDHANAN " color="#FF4B5C" delay={0.2} />
-                    <LetterReveal text="N A" color="rgba(255,255,255,0.6)" delay={1.9} />
-                  </div>
+              <div className="flex flex-col items-center md:items-start md:pl-16 text-center md:text-left overflow-visible">
+                <span className="text-[11px] sm:text-[13px] font-black tracking-[0.5em] text-gray-500 uppercase block mb-4 opacity-80">Portfolio of</span>
+                <div className="font-black tracking-widest leading-[1.1] relative group whitespace-nowrap flex items-center" style={{ fontSize: 'clamp(1rem, 4vw, 2.6rem)' }}>
+                  <LetterReveal text="MADHUSUDHANAN " color="#FF4B5C" delay={0.2} />
+                  <LetterReveal text="N A" color="#555" delay={2.0} />
                   {/* Glow pulse under name */}
                   <motion.div 
                     animate={{ opacity: [0.3, 0.8, 0.3], scaleX: [0.8, 1.2, 0.8] }} 
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    className="mt-6 md:mt-8 h-[2px] w-full max-w-[200px] md:max-w-[300px] bg-gradient-to-r from-[#FF4B5C] via-[#FF4B5C]/50 to-transparent mx-auto md:mx-0 rounded-full blur-[1px]" 
+                    className="mt-6 md:mt-8 h-[1px] w-full bg-gradient-to-r from-[#FF4B5C] via-[#FF4B5C]/50 to-transparent mx-auto md:mx-0 rounded-full blur-[1px]" 
                   />
                 </div>
               </div>
@@ -1402,7 +1401,7 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
         </AnimatePresence>
 
         {/* Phase Progress Bar — always visible */}
-        <motion.div className="w-full flex justify-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <motion.div className="w-full flex justify-center mt-6" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <PhaseBar progress={progress} />
         </motion.div>
       </div>
