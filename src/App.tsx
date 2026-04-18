@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'motion/react';
 import {
   Github,
   Linkedin,
@@ -7,38 +7,38 @@ import {
   ExternalLink,
   Award,
   MapPin,
-  Phone,
   Code2,
   Cpu,
   Layers,
   Globe,
-  FileText,
   ChevronRight,
   Menu,
   X,
   CheckCircle2,
-  Sparkles,
   Zap,
-  Terminal,
-  Palette,
-  ArrowUpRight,
   Download,
   User2,
   Briefcase,
   Monitor,
   Server,
   Database,
-  Cloud
+  Cloud,
+  Palette,
+  Bot,
+  Sparkles,
+  Send,
+  MessageSquare
 } from 'lucide-react';
 import { cn } from './lib/utils';
-import { div, section } from 'motion/react-client';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 
 // --- Types ---
 interface Skill {
   name: string;
-  logo: string;
+  logo?: string;
   invert?: boolean;
-  category: 'frontend' | 'backend' | 'database-services' | 'tools' | 'deployment';
+  category: 'frontend' | 'backend' | 'database-services' | 'tools' | 'deployment' | 'soft-skills';
 }
 
 interface Project {
@@ -67,100 +67,96 @@ interface Certification {
 
 // --- Data ---
 const SKILLS: Skill[] = [
-  // Frontend
-  { name: 'HTML5', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg', category: 'frontend' },
-  { name: 'CSS3', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg', category: 'frontend' },
+  { name: 'HTML', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg', category: 'frontend' },
+  { name: 'CSS', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg', category: 'frontend' },
   { name: 'JavaScript', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg', category: 'frontend' },
-  { name: 'React.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg', category: 'frontend' },
-  // Backend
+  { name: 'React', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg', category: 'frontend' },
   { name: 'Node.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg', category: 'backend' },
-  { name: 'Express.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg', category: 'backend', invert: true },
-  { name: 'Python', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg', category: 'backend' },
-  // Database & Services
-  { name: 'Firebase', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg', category: 'database-services' },
+  { name: 'Express', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg', category: 'backend', invert: true },
+  { name: 'Firebase', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-plain.svg', category: 'database-services' },
   { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg', category: 'database-services' },
   { name: 'MongoDB', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg', category: 'database-services' },
   { name: 'MySQL', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg', category: 'database-services' },
-  // Deployment
   { name: 'Vercel', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg', category: 'deployment', invert: true },
-  { name: 'Hosting', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg', category: 'deployment' },
-  // Tools
+  { name: 'Firebase Hosting', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-plain.svg', category: 'deployment' },
   { name: 'Git', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg', category: 'tools' },
   { name: 'GitHub', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg', category: 'tools', invert: true },
   { name: 'Figma', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg', category: 'tools' },
-  { name: 'Stitch', logo: 'https://www.vectorlogo.zone/logos/stitchdata/stitchdata-icon.svg', category: 'tools' },
-  { name: 'Power BI', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg', category: 'tools' },
+  { name: 'Power BI', logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZmlsbD0iI0YyQzgxQSIgZD0iTTE2IDEwaDR2MjBoLTR6Ii8+PHBhdGggZmlsbD0iI0Y5QUQxOSIgZD0iTTEwIDE2aDR2MTRoLTR6Ii8+PHBhdGggZmlsbD0iI0E1NzYwNyIgZD0iTTIyIDRoNHYyNmgtNHoiLz48L3N2Zz4=', category: 'tools' },
+  { name: 'Communication', category: 'soft-skills' },
+  { name: 'Leadership', category: 'soft-skills' },
+  { name: 'Team Collaboration', category: 'soft-skills' },
+  { name: 'Problem Solving', category: 'soft-skills' },
 ];
 
 const PROJECTS: Project[] = [
   {
     title: 'AI Resume Maker',
-    description: 'A web application that helps users create professional resumes quickly with AI-based suggestions and smart formatting.',
+    description: 'Problem: Students struggle to build professional resumes. Solution: AI-powered tool for smart formatting and suggestions.',
     problem: 'Many students struggle to build structured and professional resumes.',
     solution: 'Developed an AI-powered tool that generates resumes with proper formatting and smart content suggestions.',
     image: '/ai-resume-maker.png',
-    images: ['/ai-resume-maker.png', '/ai-resume-maker-2.png', '/ai-resume-maker-3.png'],
     tags: ['React', 'Firebase', 'Gemini API'],
-    features: ['Resume templates', 'AI-based content suggestions', 'Easy editing interface', 'Download / export option'],
-    role: 'Designed and developed the full application including frontend UI and backend integration.',
+    features: ['Resume templates', 'AI Suggestions'],
+    role: 'Full Stack Developer',
     medal: '🥇',
-    medalColor: '#ffd700ff',
+    medalColor: '#ffd700',
     rank: '#01',
     year: '2025',
-    links: { live: 'https://ai-resume-maker-63dcf.web.app' }
+    links: { live: 'https://ai-resume-maker-63dcf.web.app', github: '#' }
   },
   {
     title: 'Voice Bot',
-    description: 'An interactive web application that allows users to communicate using voice commands with real-time response.',
-    problem: 'Traditional web interfaces require manual input, which can be slow and less interactive.',
+    description: 'Problem: Manual input is slow. Solution: Voice-enabled system for real-time speech processing and response.',
+    problem: 'Traditional interfaces require manual input.',
     solution: 'Built a voice-enabled system that processes speech and responds accordingly in real time.',
-    images: ['/voice-bot-1.png', '/voice-bot-2.png'],
+    image: '/voice-bot-1.png',
     tags: ['JavaScript', 'Web Speech API'],
-    features: ['Voice input recognition', 'Real-time response system', 'Interactive user experience'],
-    role: 'Implemented voice recognition logic and UI interaction flow.',
+    features: ['Voice input', 'Real-time response'],
+    role: 'Developer',
     medal: '🥈',
     medalColor: '#C0C0C0',
     rank: '#02',
     year: '2025',
-    links: { live: 'https://voicebot-sooty.vercel.app/' }
+    links: { live: 'https://voicebot-sooty.vercel.app/', github: '#' }
   },
   {
-    title: 'Ayaara Web Application',
-    description: 'MotiTrack — an AI-powered student portal for motivation tracking, skill assessment, career guidance, and IoT device monitoring.',
-    problem: 'Students lack a unified platform to track motivation, assess skills, and plan their career journey.',
-    solution: 'Built a comprehensive web app with a real-time dashboard, AI career assistant, skill gap analysis, and IoT device integration.',
-    images: ['/ayaara-1.png', '/ayaara-2.png', '/ayaara-3.png', '/ayaara-4.png', '/ayaara-5.png'],
+    title: 'Ayaara Web App',
+    description: 'Problem: No unified student portal for career paths. Solution: AI portal for motivation, skills, and IoT monitoring.',
+    problem: 'Students lack a unified platform for career guidance and monitoring.',
+    solution: 'Comprehensive web app with real-time dashboard and AI career assistant.',
+    image: '/ayaara-1.png',
     tags: ['React', 'Firebase', 'IoT'],
-    features: ['Motivation & wellness dashboard', 'Skill gap analysis', 'AI career assistant', 'Career path roadmap', 'IoT device hub'],
-    role: 'Developed the frontend and handled deployment.',
+    features: ['Dashboard', 'AI Assistant'],
+    role: 'Frontend Developer',
     medal: '🥉',
     medalColor: '#CD7F32',
     rank: '#03',
     year: '2025',
-    links: { live: 'https://ayaara-ec37e.web.app/' }
+    links: { live: 'https://ayaara-ec37e.web.app/', github: '#' }
   },
   {
     title: 'Namma Madurai',
-    description: 'A Smart Civic Intelligence Platform for Madurai — empowering citizens to locate utilities, report issues, and track city cleanliness in real time.',
-    problem: 'Citizens lacked a unified platform to report civic issues, find public utilities, and monitor city cleanliness.',
-    solution: 'Built a smart city web app with an interactive map, AI assistant, community dashboard, and leaderboard.',
-    images: ['/namma-1.png', '/namma-2.png', '/namma-3.png', '/namma-4.png', '/namma-5.png'],
-    tags: ['React', 'Firebase', 'Google Maps API', 'AI'],
-    features: ['Real-time civic issue reporting', 'Interactive city map', 'City Clean Score dashboard', 'AI assistant', 'Community leaderboard'],
-    role: 'Designed and developed the entire frontend experience including maps, dashboards, and AI integration.',
+    description: 'Problem: Fragmented civic issue reporting. Solution: Smart city platform for utility location and cleanliness tracking.',
+    problem: 'Citizens lack a unified platform to report civic issues.',
+    solution: 'Smart city platform with interactive maps and clean score dashboards.',
+    image: '/namma-1.png',
+    tags: ['React', 'Firebase', 'Maps API'],
+    features: ['Real-time reporting', 'City Map'],
+    role: 'Lead Developer',
     medal: '🎨',
     medalColor: '#818cf8',
     rank: '#04',
     year: '2025',
-    links: { live: 'https://namma-madurai1.web.app/' }
+    links: { live: 'https://namma-madurai1.web.app/', github: '#' }
   },
 ];
 
 const CERTIFICATIONS: Certification[] = [
-  { title: 'UiPath RPA Associate', issuer: 'Automation Professionals Council', color: 'border-blue-500/50', date: '2023' },
-  { title: 'Meta Front-End Dev', issuer: 'Coursera Professional Certificate', color: 'border-green-500/50', date: '2024' },
-  { title: 'Google Cloud Digital', issuer: 'Cloud Foundations Badge', color: 'border-red-500/50', date: '2024' },
-  { title: 'IBM AI Engineering', issuer: 'Applied AI Developer Series', color: 'border-purple-500/50', date: '2023' },
+  { title: 'Meta Front-End Developer', issuer: 'Coursera', color: 'border-blue-500/50', date: '2024' },
+  { title: 'IBM AI Engineering', issuer: 'IBM Professional Series', color: 'border-purple-500/50', date: '2023' },
+  { title: 'Google Cloud Digital', issuer: 'Google Cloud Training', color: 'border-red-500/50', date: '2024' },
+  { title: 'UiPath RPA Associate', issuer: 'Automation Professionals', color: 'border-blue-400/50', date: '2023' },
 ];
 
 const SERVICES = [
@@ -172,13 +168,188 @@ const SERVICES = [
 
 // --- Components ---
 
-const SectionHeader = ({ title, subtitle, label }: { title: string; subtitle?: string; label?: string }) => (
-  <div className="mb-10">
-    {label && <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] mb-4 block">{label}</span>}
-    <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-4">{title}</h2>
-    {subtitle && <p className="text-gray-500 text-lg max-w-xl font-medium">{subtitle}</p>}
+const DecryptedText = ({ text, className }: { text: string; className?: string }) => {
+  const [displayText, setDisplayText] = useState('');
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (!isInView) return;
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+    let iteration = 0;
+
+    setDisplayText(text.replace(/[^\s]/g, () => chars[Math.floor(Math.random() * chars.length)]));
+
+    const interval = setInterval(() => {
+      setDisplayText(
+        text
+          .split('')
+          .map((letter, index) => {
+            if (letter === ' ') return ' ';
+            if (index < Math.floor(iteration)) return text[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join('')
+      );
+
+      if (iteration >= text.length) {
+        clearInterval(interval);
+      }
+
+      iteration += 1;
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [isInView, text]);
+
+  return (
+    <div ref={containerRef} className={className}>
+      {displayText || text.replace(/[^\s]/g, '·')}
+    </div>
+  );
+};
+
+const Reveal = ({ children, delay = 0, y = 30, x = 0, scale = 1, duration = 0.8, className = "", once = true, mask = false, key }: { children: React.ReactNode, delay?: number, y?: number, x?: number, scale?: number, duration?: number, className?: string, once?: boolean, mask?: boolean, key?: React.Key }) => {
+  if (mask) {
+    return (
+      <div className={cn("overflow-hidden", className)} key={key}>
+        <motion.div
+          initial={{ y: "100%" }}
+          whileInView={{ y: 0 }}
+          viewport={{ once, margin: "-100px" }}
+          transition={{ duration, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
+        >
+          {children}
+        </motion.div>
+      </div>
+    );
+  }
+  return (
+    <motion.div
+      key={key}
+      initial={{ opacity: 0, y, x, scale }}
+      whileInView={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+      viewport={{ once, margin: "-100px" }}
+      transition={{ duration, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const SectionHeader = ({ title, label, subtitle }: { title: string; label?: React.ReactNode; subtitle?: string }) => (
+  <div className="mb-16">
+    <Reveal y={20} duration={0.6} delay={0.1}>
+      {label && <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] mb-4 block whitespace-nowrap">{label}</span>}
+    </Reveal>
+    <Reveal mask duration={1} delay={0.2}>
+      <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-6 text-white uppercase">{title}</h2>
+    </Reveal>
+    {subtitle && (
+      <Reveal y={20} delay={0.4} duration={0.8}>
+        <p className="text-gray-500 text-lg max-w-2xl font-medium">{subtitle}</p>
+      </Reveal>
+    )}
   </div>
 );
+
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <nav className={cn(
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4",
+      scrolled ? "bg-surface/80 backdrop-blur-xl border-b border-white/5 py-3" : "bg-transparent"
+    )}>
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-2xl font-display font-black tracking-tighter flex items-center gap-3"
+        >
+          <div className="w-10 h-10 bg-accent-purple rounded-lg flex items-center justify-center text-surface text-base font-bold">M</div>
+          <span className="hidden sm:inline font-black tracking-tight text-white uppercase">MADHUSUDHANAN N A</span>
+        </motion.div>
+
+        <div className="hidden md:flex items-center gap-2 glass p-1.5 rounded-full border-white/10 shadow-2xl">
+          {[
+            { label: 'ABOUT', href: '#about' },
+            { label: 'SKILLS', href: '#skills' },
+            { label: 'PROJECTS', href: '#projects' },
+            { label: 'CONTACT', href: '#contact' }
+          ].map((item, i) => (
+            <motion.a
+              key={item.label}
+              href={item.href}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="px-6 py-2.5 rounded-full text-xs font-black text-gray-400 tracking-widest transition-all hover:bg-white/5 hover:text-white group relative"
+            >
+              {item.label}
+            </motion.a>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-3"
+          >
+            <div className="hidden sm:flex items-center gap-2">
+              <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white">
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white">
+                <Github className="w-4 h-4" />
+              </a>
+            </div>
+            <button className="hidden sm:flex items-center gap-2 px-6 py-3 glass rounded-full text-xs font-bold tracking-widest hover:bg-white/10 transition-all text-white">
+              RESUME <Download className="w-4 h-4" />
+            </button>
+          </motion.div>
+          <button className="md:hidden text-white p-2 glass rounded-lg" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="absolute top-full left-0 right-0 bg-surface/95 backdrop-blur-md border-b border-white/5 p-8 flex flex-col gap-6 md:hidden overflow-hidden"
+          >
+            {['ABOUT', 'SKILLS', 'PROJECTS', 'CONTACT'].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="text-2xl font-black tracking-tighter text-white"
+                onClick={() => setIsOpen(false)}
+              >
+                {item}
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
 
 const ThreeDCard = () => {
   const mouseX = useSpring(0, { stiffness: 100, damping: 30 });
@@ -205,37 +376,37 @@ const ThreeDCard = () => {
         <motion.div
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -left-6 top-[5%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(60px)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+          className="absolute -left-6 top-[15%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
+          style={{ transform: 'translateZ(60px)' }}
         >
-          <span className="w-2 h-2 rounded-full bg-[#7c5cfc]" /> Claude API
+          <span className="w-2 h-2 rounded-full bg-[#61dafb]" /> React
         </motion.div>
 
         <motion.div
           animate={{ y: [0, -6, 0] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute -right-6 top-[5%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(60px)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+          className="absolute -right-6 top-[15%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
+          style={{ transform: 'translateZ(60px)' }}
         >
-          <span className="w-2 h-2 rounded-full bg-[#00d4aa]" /> Gemini API
+          <span className="w-2 h-2 rounded-full bg-[#ffca28]" /> Firebase
         </motion.div>
 
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute -left-10 top-[45%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(50px)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+          className="absolute -left-10 bottom-[25%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
+          style={{ transform: 'translateZ(50px)' }}
         >
-          <span className="w-2 h-2 rounded-full bg-[#ff7043]" /> React
+          <span className="w-2 h-2 rounded-full bg-[#ffffff]" /> Vercel
         </motion.div>
 
         <motion.div
           animate={{ y: [0, -7, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-          className="absolute -right-8 top-[45%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
-          style={{ transform: 'translateZ(50px)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+          className="absolute -right-8 bottom-[25%] z-30 flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold glass"
+          style={{ transform: 'translateZ(50px)' }}
         >
-          <span className="w-2 h-2 rounded-full bg-[#7c5cfc]" /> Firebase
+          <span className="w-2 h-2 rounded-full bg-[#f7df1e]" /> JavaScript
         </motion.div>
 
         {/* 3D Card Base */}
@@ -268,7 +439,7 @@ const ThreeDCard = () => {
             style={{
               background: useTransform(
                 [mouseX, mouseY],
-                ([x, y]) => `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.15), transparent 70%)`
+                ([x, y]: any) => `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.15), transparent 70%)`
               ),
               transform: 'translateZ(1px)'
             }}
@@ -302,246 +473,199 @@ const ThreeDCard = () => {
             ))}
           </div>
 
-          {/* Name overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-8 z-30" style={{ transform: 'translateZ(40px)', background: 'linear-gradient(to top, rgba(8,8,18,0.95) 0%, transparent 100%)' }}>
-            <div className="text-xl font-display font-black tracking-[0.2em] text-white">
-              MADHUSUDHANAN N A
-            </div>
+          {/* Smooth Running Text Overlay */}
+          <div
+            className="absolute bottom-0 left-0 right-0 pt-20 pb-6 z-30 overflow-hidden"
+            style={{
+              transform: 'translateZ(40px)',
+              background: 'linear-gradient(to top, rgba(8,8,18,0.98) 0%, transparent 100%)'
+            }}
+          >
+            <motion.div
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="flex whitespace-nowrap w-max"
+            >
+              {[...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-6 pr-6 text-[11px] sm:text-[13px] font-sans font-bold tracking-[0.25em] text-[#f8f8f8] uppercase drop-shadow-md"
+                >
+                  <span className="text-white/30 text-lg leading-none font-light">-</span>
+                  <span className="text-white/80">FULL STACK DEVELOPER</span>
+                  <span className="text-white/30 text-lg leading-none font-light">-</span>
+                  <span className="text-white/80">UI/UX DESIGNER</span>
+                  <span className="text-white/30 text-lg leading-none font-light">-</span>
+                  <span className="text-white/80">AI ENGINEER</span>
+                  <span className="text-white/30 text-lg leading-none font-light">-</span>
+                  <span className="text-white/80">PRODUCT BUILDER</span>
+                  <span className="text-white/30 text-lg leading-none font-light">-</span>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </motion.div>
-      </div>
-
-      <div className="text-[10px] font-bold text-gray-500 tracking-[0.5em] uppercase animate-pulse">
-        HOVER TO INTERACT
       </div>
     </div>
   );
 };
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4",
-      scrolled ? "bg-surface/80 backdrop-blur-xl border-b border-white/5 py-3" : "bg-transparent"
-    )}>
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="text-xl font-display font-black tracking-tighter flex items-center gap-2"
-        >
-          <div className="w-8 h-8 bg-accent-purple rounded-lg flex items-center justify-center text-surface text-sm">M</div>
-          <span className="hidden sm:inline font-black tracking-tight">MADHUSUDHANAN N A</span>
-        </motion.div>
-
-        <div className="hidden md:flex items-center gap-2 glass p-1.5 rounded-full border-white/10 shadow-2xl">
-          {[
-            { label: 'ABOUT', icon: <User2 className="w-4 h-4" /> },
-            { label: 'SKILLS', icon: <Zap className="w-4 h-4" /> },
-            { label: 'PROJECTS', icon: <Briefcase className="w-4 h-4" /> },
-            { label: 'CONTACT', icon: <Mail className="w-4 h-4" /> }
-          ].map((item) => (
-            <a 
-              key={item.label} 
-              href={`#${item.label.toLowerCase()}`} 
-              className="flex flex-col items-center px-6 py-2 rounded-full text-[9px] font-bold text-gray-400 tracking-widest transition-all hover:bg-white/5 hover:text-white group relative"
-            >
-              <div className="mb-1 transition-transform group-hover:-translate-y-0.5">{item.icon}</div>
-              <span className="opacity-0 group-hover:opacity-100 transition-all absolute -bottom-5 text-[8px] whitespace-nowrap bg-surface px-2 py-1 rounded-md border border-white/5 shadow-xl pointer-events-none">{item.label}</span>
-              {item.label === 'ABOUT' && <div className="absolute inset-0 bg-white/5 rounded-full -z-10 border border-white/10" />}
-              <span className="group-hover:text-accent-purple hidden lg:block transition-colors">{item.label}</span>
-            </a>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 glass rounded-full text-[10px] font-bold tracking-widest hover:bg-white/10 transition-all">
-            RESUME <Download className="w-3 h-3" />
-          </button>
-          <button className="md:hidden text-white p-2 glass rounded-lg" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="absolute top-full left-0 right-0 bg-surface/95 backdrop-blur-2xl border-b border-white/5 p-8 flex flex-col gap-6 md:hidden overflow-hidden"
-          >
-            {['ABOUT', 'SKILLS', 'PROJECTS', 'CONTACT'].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-2xl font-black tracking-tighter"
-                onClick={() => setIsOpen(false)}
-              >
-                {item}
-              </a>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
-  );
-};
-
 const Hero = () => {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-
   return (
     <section className="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden mesh-gradient">
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "circOut" }}
-          className="lg:col-span-7"
-        >
-          <div className="flex items-center gap-3 mb-8">
-            <div className="px-3 py-1 glass rounded-full flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />
-              <span className="text-[10px] font-bold tracking-[0.2em] text-accent-green uppercase">Available for Hire</span>
+        <div className="lg:col-span-7">
+          <Reveal y={30} duration={0.8} delay={0.2}>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="px-3 py-1 glass rounded-full flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />
+                <span className="text-[10px] font-bold tracking-[0.2em] text-accent-green uppercase">Available for Hire</span>
+              </div>
+              <div className="px-3 py-1 glass rounded-full">
+                <span className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">Based in India</span>
+              </div>
             </div>
-            <div className="px-3 py-1 glass rounded-full">
-              <span className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">Based in India</span>
-            </div>
-          </div>
+          </Reveal>
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[4.2vw] font-black leading-[0.9] mb-10 tracking-tighter text-gradient uppercase">
-            MADHUSUDHANAN N A
-          </h1>
+          <Reveal y={40} duration={1} delay={0.3} mask>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5vw] xl:text-[3.8vw] font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
+              MADHUSUDHANAN N A
+            </h1>
+          </Reveal>
 
-          <p className="text-xl md:text-2xl text-gray-400 max-w-xl mb-12 leading-relaxed font-medium">
-            Architecting the future of digital experiences through <span className="text-white">Full-Stack Precision</span> and <span className="text-white">AI Innovation</span>.
-          </p>
+          <Reveal y={20} duration={0.8} delay={0.5}>
+            <p className="text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight">
+              Full Stack Developer building real-world web applications
+            </p>
+          </Reveal>
 
-          <div className="flex flex-wrap gap-6 items-center">
-            <button className="group relative px-10 py-5 bg-accent-purple text-surface font-black rounded-2xl overflow-hidden transition-all hover:shadow-[0_0_40px_rgba(129,140,248,0.4)]">
-              <span className="relative z-10 flex items-center gap-2">
-                START A PROJECT <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <Reveal y={20} duration={0.8} delay={0.6}>
+            <p className="text-lg text-gray-400 max-w-xl mb-12 leading-relaxed font-medium">
+              I design, develop, and deploy scalable web solutions using modern technologies.
+            </p>
+          </Reveal>
+
+          <Reveal y={30} duration={0.8} delay={0.8} className="flex flex-wrap gap-6 items-center">
+            <a href="#projects" className="group relative px-10 py-5 bg-accent-purple text-surface font-black rounded-2xl overflow-hidden transition-all hover:shadow-[0_0_40px_rgba(129,140,248,0.4)]">
+              <span className="relative z-10 flex items-center gap-2 text-surface font-bold">
+                VIEW PROJECTS <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
+            </a>
+            <button className="flex items-center gap-2 px-10 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white">
+              DOWNLOAD RESUME <Download className="w-4 h-4" />
             </button>
-            <div className="flex items-center gap-4">
-              <a href="#" className="p-4 glass rounded-2xl hover:bg-white/10 transition-all"><Github className="w-5 h-5" /></a>
-              <a href="#" className="p-4 glass rounded-2xl hover:bg-white/10 transition-all"><Linkedin className="w-5 h-5" /></a>
-            </div>
-          </div>
-        </motion.div>
+          </Reveal>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, rotateY: -10 }}
-          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-          transition={{ duration: 1.2, ease: "circOut", delay: 0.4 }}
-          className="lg:col-span-5 relative lg:translate-x-12"
-        >
+        <Reveal scale={0.9} duration={1.2} delay={0.4} className="lg:col-span-5 relative lg:translate-x-12">
           <ThreeDCard />
-        </motion.div>
+        </Reveal>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-      >
-        <div className="w-[1px] h-12 bg-gradient-to-b from-accent-purple to-transparent" />
+      <Reveal y={20} delay={1.5} className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-[1px] h-12 bg-gradient-to-b from-accent-purple to-transparent"
+        />
         <span className="text-[8px] font-bold text-gray-500 tracking-[0.5em] uppercase">Scroll</span>
-      </motion.div>
+      </Reveal>
     </section>
   );
 };
 
 const BentoAbout = () => {
+  const [labelIndex, setLabelIndex] = useState(0);
+  const labels = ["The Developer", "AI Engineer", "Product Developer", "UI/UX Designer"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLabelIndex((prev) => (prev + 1) % labels.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section id="about" className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
-          label="The Architect"
-          title="Behind the Craft"
-          subtitle="A fusion of technical precision and creative vision, dedicated to building the next generation of web applications."
+          label={
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={labelIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="inline-block"
+              >
+                {labels[labelIndex]}
+              </motion.span>
+            </AnimatePresence>
+          }
+          title="About Me"
+          subtitle="A CSBS student with a passion for building professional full stack applications."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-full">
-          {/* Main Bio */}
-          <div className="md:col-span-8 bento-card p-6 flex flex-col justify-between">
+          <Reveal y={40} duration={1} className="md:col-span-8 bento-card p-10 flex flex-col justify-between">
             <div className="max-w-2xl">
-              <h3 className="text-3xl font-black mb-6 tracking-tight">I bridge the gap between complex logic and intuitive design through Full-Stack precision.</h3>
-              <p className="text-gray-400 text-lg leading-relaxed mb-8">
-                I am a Computer Science and Business Systems student with a strong interest in full stack development and building real-world applications. I enjoy working across both frontend and backend, focusing on creating clean user interfaces and efficient system logic.
-              </p>
-              <p className="text-gray-400 text-lg leading-relaxed mb-8">
-                I have built multiple projects including an AI-powered resume generator, a voice-enabled web application, and other interactive platforms. These projects have helped me gain practical experience in modern web technologies, deployment, and problem-solving.
-              </p>
-              <p className="text-gray-400 text-lg leading-relaxed mb-8">
-                I am continuously learning and improving my skills in full stack development, with a focus on building scalable, user-focused applications.
-              </p>
+              <h3 className="text-3xl font-black mb-6 tracking-tight text-white">I design, develop, and deploy scalable web solutions using modern technologies.</h3>
+              <div className="space-y-4 text-gray-400 text-lg leading-relaxed mb-8">
+                <p>
+                  I am a Computer Science and Business Systems student with a strong passion for full stack development. I focus on creating real-world projects that solve actual problems, bridging the gap between elegant frontend design and robust backend logic.
+                </p>
+                <p>
+                  My journey involves building everything from AI-powered tools to smart civic platforms, always ensuring the end product is scalable and user-focused.
+                </p>
+              </div>
             </div>
             <div className="flex flex-wrap gap-4">
               <div className="px-6 py-3 glass rounded-2xl flex items-center gap-3">
                 <Zap className="w-4 h-4 text-accent-green" />
-                <span className="text-xs font-bold tracking-widest">Fast Performance</span>
+                <span className="text-xs font-bold tracking-widest text-white">Fast Performance</span>
               </div>
               <div className="px-6 py-3 glass rounded-2xl flex items-center gap-3">
                 <Layers className="w-4 h-4 text-accent-blue" />
-                <span className="text-xs font-bold tracking-widest">Scalable Code</span>
+                <span className="text-xs font-bold tracking-widest text-white">Scalable Code</span>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Achievement */}
-          <div className="md:col-span-4 bento-card bg-accent-purple/5 border-accent-purple/20">
+          <Reveal y={40} delay={0.2} duration={1} className="md:col-span-4 bento-card bg-accent-purple/5 border-accent-purple/20 p-10">
             <Award className="w-10 h-10 text-accent-purple mb-6" />
-            <h4 className="text-xl font-black mb-2">Top Honors</h4>
-            <p className="text-sm text-gray-400 mb-6">2nd Prize Poster Design NEXORA 2025. Recognized for visual excellence and technical clarity.</p>
-            <div className="text-xs font-bold text-accent-purple uppercase tracking-widest">Awarded April 2025</div>
-          </div>
+            <h4 className="text-xl font-black mb-2 text-white uppercase">Top Honors</h4>
+            <p className="text-sm text-gray-400 mb-6 font-medium">2nd Prize Poster Design NEXORA 2025. Recognized for visual excellence and technical clarity.</p>
+            <div className="text-xs font-bold text-accent-purple uppercase tracking-[0.2em]">Awarded April 2025</div>
+          </Reveal>
 
-          {/* Role */}
-          <div className="md:col-span-4 bento-card">
-            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Current Role</div>
-            <h4 className="text-2xl font-black mb-2">UiPath Club Secretary</h4>
-            <p className="text-sm text-gray-400">Leading automation initiatives and fostering a community of technical innovators at PSNA College.</p>
-            <h4 className="text-2xl font-black mb-2">Math Club Executive Member</h4>
-            <p className="text-sm text-gray-400">Honored to serve as an Executive Member-Math club,PSNA CET</p>
-          </div>
+          <Reveal y={40} delay={0.3} duration={1} className="md:col-span-4 bento-card p-10">
+            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Current Role</div>
+            <h4 className="text-2xl font-black mb-2 text-white">UiPath Club Secretary</h4>
+            <p className="text-sm text-gray-400 mb-6">Leading automation initiatives and technical communities at PSNA College.</p>
+            <h4 className="text-2xl font-black mb-2 text-white">Math Club Member</h4>
+            <p className="text-sm text-gray-400">Executive member contributing to mathematical research and events.</p>
+          </Reveal>
 
-          <div className="md:col-span-8 bento-card p-5 grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-white/5 rounded-xl"><Mail className="w-4 h-4 text-accent-purple" /></div>
-                <span className="text-sm font-medium">msudhanan2007@gmail.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-white/5 rounded-xl"><MapPin className="w-4 h-4 text-accent-blue" /></div>
-                <span className="text-sm font-medium">Tamil Nadu, India</span>
+          <Reveal y={40} delay={0.4} duration={1} className="md:col-span-8 bento-card p-0 overflow-hidden relative group">
+            <img
+              src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200"
+              alt="Tech Space"
+              className="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent p-12 flex flex-col justify-center">
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/5 rounded-xl"><Mail className="w-5 h-5 text-accent-purple" /></div>
+                  <span className="text-lg font-medium text-white tracking-tight">msudhanan2007@gmail.com</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/5 rounded-xl"><MapPin className="w-5 h-5 text-accent-blue" /></div>
+                  <span className="text-lg font-medium text-white tracking-tight">Tamil Nadu, India</span>
+                </div>
               </div>
             </div>
-            <div className="relative aspect-[21/9] rounded-xl overflow-hidden glass">
-              <img
-                src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600"
-                alt="Tech"
-                className="w-full h-full object-cover opacity-50 grayscale"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-[10px] font-bold tracking-[0.5em] uppercase">Global Reach</div>
-              </div>
-            </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -560,17 +684,18 @@ const Services = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {SERVICES.map((service, i) => (
-            <motion.div
+            <Reveal
               key={i}
-              whileHover={{ y: -10 }}
+              y={30}
+              delay={i * 0.1}
               className="glass p-10 rounded-[2.5rem] glass-hover group"
             >
               <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent-purple/20 transition-colors">
                 {React.cloneElement(service.icon as React.ReactElement, { className: "w-6 h-6 text-accent-purple" })}
               </div>
-              <h4 className="text-xl font-black mb-4 tracking-tight">{service.title}</h4>
-              <p className="text-sm text-gray-500 leading-relaxed">{service.desc}</p>
-            </motion.div>
+              <h4 className="text-xl font-black mb-4 tracking-tight text-white uppercase">{service.title}</h4>
+              <p className="text-sm text-gray-500 leading-relaxed font-sm">{service.desc}</p>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -579,7 +704,7 @@ const Services = () => {
 };
 
 const Skills = () => {
-  const [activeTab, setActiveTab] = useState<'frontend' | 'backend' | 'database-services' | 'tools' | 'deployment'>('frontend');
+  const [activeTab, setActiveTab] = useState<'frontend' | 'backend' | 'database-services' | 'tools' | 'deployment' | 'soft-skills'>('frontend');
 
   return (
     <section id="skills" className="py-32 px-6">
@@ -589,21 +714,22 @@ const Skills = () => {
             label="Arsenal"
             title="Technical Stack"
           />
-          <div className="flex flex-wrap gap-2 p-1.5 glass rounded-full border-white/5 shadow-2xl">
+          <Reveal y={20} className="flex flex-wrap justify-center gap-3 p-2.5 glass rounded-[2rem] border-white/5 shadow-2xl">
             {[
-              { id: 'frontend', label: 'FRONTEND', icon: <Monitor className="w-3.5 h-3.5" /> },
-              { id: 'backend', label: 'BACKEND', icon: <Server className="w-3.5 h-3.5" /> },
-              { id: 'database-services', label: 'DATABASE & SERVICES', icon: <Database className="w-3.5 h-3.5" /> },
-              { id: 'deployment', label: 'DEPLOYMENT', icon: <Cloud className="w-3.5 h-3.5" /> },
-              { id: 'tools', label: 'TOOLS', icon: <Zap className="w-3.5 h-3.5" /> }
+              { id: 'frontend', label: 'FRONTEND', icon: <Monitor className="w-4 h-4" /> },
+              { id: 'backend', label: 'BACKEND', icon: <Server className="w-4 h-4" /> },
+              { id: 'database-services', label: 'DATABASE & SERVICES', icon: <Database className="w-4 h-4" /> },
+              { id: 'deployment', label: 'DEPLOYMENT', icon: <Cloud className="w-4 h-4" /> },
+              { id: 'tools', label: 'TOOLS', icon: <Zap className="w-4 h-4" /> },
+              { id: 'soft-skills', label: 'SOFT SKILLS', icon: <User2 className="w-4 h-4" /> }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-3 px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] transition-all relative group overflow-hidden",
-                  activeTab === tab.id 
-                    ? "text-surface bg-accent-purple shadow-[0_0_20px_rgba(129,140,248,0.4)]" 
+                  "flex items-center gap-3 px-6 py-3 rounded-full text-xs font-black uppercase tracking-[0.15em] transition-all relative group overflow-hidden shadow-none",
+                  activeTab === tab.id
+                    ? "text-surface bg-accent-purple"
                     : "text-gray-500 hover:text-white hover:bg-white/5"
                 )}
               >
@@ -611,108 +737,43 @@ const Skills = () => {
                   {tab.icon}
                 </span>
                 <span className="relative z-10">{tab.label}</span>
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="activeTabGlow"
-                    className="absolute inset-0 bg-white/10 blur-xl rounded-full"
-                  />
-                )}
               </button>
             ))}
-          </div>
+          </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           <AnimatePresence mode="wait">
             {SKILLS.filter(s => s.category === activeTab).map((skill, i) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: i * 0.05 }}
-                className="glass p-10 rounded-[2rem] flex flex-col items-center gap-6 glass-hover group"
+              <Reveal
+                key={`${activeTab}-${skill.name}`}
+                y={30}
+                delay={i * 0.05}
+                className="glass p-10 rounded-[2.5rem] flex flex-col items-center justify-center gap-6 glass-hover group h-full min-h-[180px]"
               >
-                <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-accent-purple/10 transition-all duration-500 p-4">
-                  <img
-                    src={skill.logo}
-                    alt={skill.name}
-                    className={cn(
-                      'w-full h-full object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-lg',
-                      skill.invert && 'invert brightness-200'
-                    )}
-                  />
-                </div>
-                <span className="text-xs font-bold uppercase tracking-[0.2em]">{skill.name}</span>
-              </motion.div>
+                {skill.logo ? (
+                  <>
+                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-accent-purple/10 transition-all duration-500 p-4">
+                      <img
+                        src={skill.logo}
+                        alt={skill.name}
+                        className={cn(
+                          'w-full h-full object-contain transition-all duration-500 group-hover:scale-110',
+                          skill.invert && 'invert brightness-200'
+                        )}
+                      />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white text-center">{skill.name}</span>
+                  </>
+                ) : (
+                  <span className="text-[12px] lg:text-[14px] font-semibold uppercase tracking-[0.2em] text-white text-center leading-relaxed">{skill.name}</span>
+                )}
+              </Reveal>
             ))}
           </AnimatePresence>
         </div>
       </div>
     </section>
-  );
-};
-
-const ProjectImageSlider = ({ images, title }: { images: string[]; title: string }) => {
-  const [current, setCurrent] = useState(0);
-  const [prev, setPrev] = useState<number | null>(null);
-  const [sliding, setSliding] = useState(false);
-
-  useEffect(() => {
-    if (images.length < 2) return;
-    const interval = setInterval(() => {
-      setPrev(current);
-      setSliding(true);
-      setTimeout(() => {
-        setCurrent(c => (c + 1) % images.length);
-        setSliding(false);
-        setPrev(null);
-      }, 500);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [current, images.length]);
-
-  return (
-    <div className="relative w-full h-full overflow-hidden">
-      {/* Outgoing image slides left */}
-      {prev !== null && (
-        <img
-          key={`prev-${prev}`}
-          src={images[prev]}
-          alt={`${title} ${prev + 1}`}
-          className="absolute inset-0 w-full h-full object-cover object-top"
-          style={{
-            transform: sliding ? 'translateX(-100%)' : 'translateX(0)',
-            transition: 'transform 0.5s cubic-bezier(0.77,0,0.18,1)',
-          }}
-        />
-      )}
-      {/* Incoming image slides in from right */}
-      <img
-        key={`curr-${current}`}
-        src={images[current]}
-        alt={`${title} ${current + 1}`}
-        className="absolute inset-0 w-full h-full object-cover object-top"
-        style={{
-          transform: sliding ? 'translateX(0)' : prev !== null ? 'translateX(100%)' : 'translateX(0)',
-          transition: sliding ? 'transform 0.5s cubic-bezier(0.77,0,0.18,1)' : 'none',
-        }}
-      />
-      {/* Dot indicators */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-        {images.map((_, idx) => (
-          <div
-            key={idx}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: idx === current ? 18 : 6,
-              height: 6,
-              background: idx === current ? 'rgba(129,140,248,0.9)' : 'rgba(255,255,255,0.25)',
-            }}
-          />
-        ))}
-      </div>
-    </div>
   );
 };
 
@@ -723,37 +784,23 @@ const Projects = () => {
         <SectionHeader
           label="Portfolio"
           title="Featured Works"
-          subtitle="Real-world projects — from AI tools to cultural platforms — built with precision and purpose."
+          subtitle="Real-world projects built with precision and purpose."
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {PROJECTS.map((project, i) => (
-            <motion.div
+            <Reveal
               key={project.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -6 }}
+              y={40}
+              delay={i * 0.15}
               className="glass rounded-[2.5rem] overflow-hidden group flex flex-col glass-hover"
             >
-              {/* Image Slot */}
               <div className="relative aspect-[16/9] bg-white/[0.03] border-b border-white/5 flex items-center justify-center overflow-hidden">
-                {project.images && project.images.length > 1 ? (
-                  <ProjectImageSlider images={project.images} title={project.title} />
-                ) : project.image ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center gap-3 opacity-30">
-                    <div className="text-5xl">{project.medal}</div>
-                    <div className="text-[10px] font-bold tracking-[0.4em] uppercase text-gray-500">Add Project Screenshot</div>
-                  </div>
-                )}
-                {/* Rank + Medal badge */}
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
                 <div className="absolute top-5 left-5 flex items-center gap-3">
                   <div
                     className="px-3 py-1 rounded-full text-[11px] font-black tracking-widest flex items-center gap-2"
@@ -762,79 +809,50 @@ const Projects = () => {
                     {project.medal} {project.rank}
                   </div>
                 </div>
-                <div className="absolute top-5 right-5 glass px-3 py-1 rounded-full text-[10px] font-black tracking-widest">
+                <div className="absolute top-5 right-5 glass px-3 py-1 rounded-full text-[10px] font-black tracking-widest text-white">
                   {project.year}
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-8 flex flex-col flex-1">
-                <h3 className="text-2xl font-black mb-3 tracking-tight">{project.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-6">{project.description}</p>
+                <h3 className="text-2xl font-black mb-3 tracking-tight text-white uppercase">{project.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 font-medium">{project.description}</p>
 
-                {/* Problem / Solution */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-                    <div className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-2">Problem</div>
-                    <p className="text-xs text-gray-400 leading-relaxed">{project.problem}</p>
+                    <div className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-2">Problem</div>
+                    <p className="text-xs text-gray-500 font-medium">{project.problem}</p>
                   </div>
                   <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-                    <div className="text-[10px] font-bold text-accent-green uppercase tracking-widest mb-2">Solution</div>
-                    <p className="text-xs text-gray-400 leading-relaxed">{project.solution}</p>
+                    <div className="text-[10px] font-black text-accent-green uppercase tracking-widest mb-2">Solution</div>
+                    <p className="text-xs text-gray-500 font-medium">{project.solution}</p>
                   </div>
                 </div>
 
-                {/* Key Features */}
-                <div className="mb-6">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Key Features</div>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-1 gap-x-3">
-                    {project.features.map(f => (
-                      <li key={f} className="flex items-center gap-2 text-xs text-gray-400">
-                        <CheckCircle2 className="w-3 h-3 text-accent-green flex-shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Tech Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-8">
                   {project.tags.map(tag => (
-                    <span key={tag} className="px-4 py-1.5 glass rounded-full text-[10px] font-bold text-accent-blue uppercase tracking-widest">
+                    <span key={tag} className="px-4 py-1.5 glass rounded-full text-[10px] font-black text-accent-blue uppercase tracking-widest border-white/5">
                       {tag}
                     </span>
                   ))}
                 </div>
 
-                {/* Role */}
-                <div className="text-xs text-gray-500 mb-6 italic border-l-2 border-accent-purple/30 pl-4">
-                  <span className="text-gray-400 font-medium not-italic">Role: </span>{project.role}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-6 mt-auto">
-                  {project.links.live && (
-                    <a
-                      href={project.links.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm font-black hover:text-accent-purple transition-all group/link"
-                    >
-                      LIVE DEMO <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                    </a>
-                  )}
-                  {project.links.github && (
-                    <a
-                      href={project.links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-white transition-all"
-                    >
-                      SOURCE <Github className="w-4 h-4" />
-                    </a>
-                  )}
+                <div className="flex gap-4 mt-auto pt-6 border-t border-white/5">
+                  <a
+                    href={project.links.live}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-accent-purple text-surface rounded-xl text-[10px] font-black tracking-widest hover:shadow-xl transition-all font-bold"
+                  >
+                    LIVE DEMO <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <a
+                    href={project.links.github}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 glass rounded-xl text-[10px] font-black tracking-widest hover:bg-white/10 transition-all text-white border-white/5"
+                  >
+                    GITHUB <Github className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -844,30 +862,38 @@ const Projects = () => {
 
 const Certifications = () => {
   return (
-    <section className="py-32 px-6">
+    <section id="certifications" className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20">
-          <SectionHeader
-            label="Validation"
-            title="Verified Expertise"
-          />
-        </div>
+        <SectionHeader
+          label="Validation"
+          title="Expertise"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {CERTIFICATIONS.map((cert, i) => (
-            <motion.div
+            <Reveal
               key={i}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className={cn("glass p-10 rounded-[2.5rem] border-t-4 glass-hover", cert.color)}
+              y={30}
+              delay={i * 0.12}
+              className={cn("p-10 glass rounded-[2.5rem] border-l-4 flex flex-col gap-2 glass-hover border-white/5", cert.color)}
             >
-              <div className="flex justify-between items-start mb-8">
-                <CheckCircle2 className="w-6 h-6 text-accent-green" />
+              <div className="flex justify-between items-start mb-10">
+                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-accent-green" />
+                </div>
                 <span className="text-[10px] font-bold text-gray-500">{cert.date}</span>
               </div>
-              <h4 className="text-xl font-black mb-3 leading-tight tracking-tight">{cert.title}</h4>
-              <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{cert.issuer}</p>
-            </motion.div>
+              <h4 className="text-xl font-black mb-4 leading-tight tracking-tight text-white uppercase">{cert.title}</h4>
+              <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">{cert.issuer}</p>
+            </Reveal>
           ))}
+        </div>
+
+        <div className="mt-24 flex justify-center text-center px-4">
+          <DecryptedText
+            text="BUILDING REAL-WORLD SOLUTIONS WITH CERTIFIED SKILLS IN FRONTEND, AI, CLOUD, AND AUTOMATION"
+            className="text-xs sm:text-sm md:text-base font-sans font-semibold tracking-[0.2em] text-[#a1a1aa] uppercase max-w-4xl leading-relaxed drop-shadow-sm"
+          />
         </div>
       </div>
     </section>
@@ -875,114 +901,491 @@ const Certifications = () => {
 };
 
 const Contact = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', project: '', message: '' });
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const { name, email, project, message } = formData;
+
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setError('Please fill in your name, email, and message.');
+      return;
+    }
+
+    const subject = encodeURIComponent(`Portfolio Inquiry${project ? ` — ${project}` : ''} from ${name}`);
+    const body = encodeURIComponent(
+      `Hi Madhusudhanan,\n\nMy name is ${name} (${email}).\n\nProject Type: ${project || 'Not specified'}\n\nMessage:\n${message}\n\nBest regards,\n${name}`
+    );
+
+    window.location.href = `mailto:msudhanan2007@gmail.com?subject=${subject}&body=${body}`;
+    setSent(true);
+    setFormData({ name: '', email: '', project: '', message: '' });
+    setTimeout(() => setSent(false), 5000);
+  };
+
   return (
     <section id="contact" className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="glass p-12 md:p-24 rounded-[4rem] relative overflow-hidden noise">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-accent-purple/20 blur-[120px] rounded-full" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-accent-blue/20 blur-[120px] rounded-full" />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+          {/* Left Side: Info */}
+          <div className="space-y-12">
             <div>
-              <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.5em] mb-6 block">Get in Touch</span>
-              <h2 className="text-7xl md:text-8xl font-black mb-10 leading-[0.85] tracking-tighter">
-                Let's<br />build the<br /><span className="text-gradient-purple">future.</span>
-              </h2>
-              <p className="text-gray-400 text-xl mb-16 leading-relaxed max-w-md font-medium">
+              <Reveal y={20} duration={0.6} className="mb-6">
+                <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] block">Get in Touch</span>
+              </Reveal>
+              <Reveal mask duration={1} delay={0.2}>
+                <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white">
+                  Let's <br /> build the <br />
+                  <span className="text-accent-blue font-black uppercase">future.</span>
+                </h2>
+              </Reveal>
+            </div>
+
+            <Reveal y={20} delay={0.4} duration={0.8}>
+              <p className="text-gray-400 text-lg max-w-md leading-relaxed font-medium">
                 I'm currently open to new opportunities and interesting projects. Let's create something extraordinary together.
               </p>
+            </Reveal>
 
-              <div className="space-y-8">
-                <div className="flex items-center gap-6 group cursor-pointer">
-                  <div className="w-14 h-14 glass rounded-2xl flex items-center justify-center group-hover:bg-accent-purple/20 transition-all">
-                    <Mail className="w-6 h-6 text-accent-purple" />
+            <div className="space-y-8 pt-8">
+              <Reveal x={-20} delay={0.6}>
+                <a href="mailto:msudhanan2007@gmail.com" className="group flex items-center gap-6 cursor-pointer">
+                  <div className="w-14 h-14 glass rounded-2xl flex items-center justify-center group-hover:bg-accent-purple/10 transition-all duration-500 border-white/5">
+                    <Mail className="w-6 h-6 text-white group-hover:text-accent-purple transition-colors" />
                   </div>
                   <div>
                     <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Email Me</div>
-                    <div className="text-lg font-black group-hover:text-accent-purple transition-colors">msudhanan2007@gmail.com</div>
+                    <div className="text-lg font-bold text-white tracking-tight group-hover:text-accent-purple transition-colors">msudhanan2007@gmail.com</div>
                   </div>
-                </div>
-                <div className="flex gap-6 pt-6">
-                  <a href="#" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all"><Linkedin className="w-6 h-6" /></a>
-                  <a href="#" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all"><Github className="w-6 h-6" /></a>
-                </div>
+                </a>
+              </Reveal>
+
+              <div className="flex gap-4">
+                <Reveal x={-20} delay={0.7}>
+                  <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
+                    <Linkedin className="w-6 h-6 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                  </a>
+                </Reveal>
+                <Reveal x={-20} delay={0.8}>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
+                    <Github className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+                  </a>
+                </Reveal>
               </div>
             </div>
+          </div>
 
-            <form className="space-y-8 glass p-10 rounded-[3rem] border-white/10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Your Name</label>
+          {/* Right Side: Form */}
+          <Reveal y={40} delay={0.4} className="bento-card p-10 lg:p-12 border-white/5">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="contact-name" className="text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">Your Name</label>
                   <input
+                    id="contact-name"
+                    name="name"
                     type="text"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="John Doe"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 focus:outline-none focus:border-accent-purple transition-all font-medium"
+                    required
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-base text-white focus:outline-none focus:border-accent-purple/50 transition-colors"
                   />
                 </div>
-                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Email Address</label>
+                <div className="space-y-2">
+                  <label htmlFor="contact-email" className="text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
                   <input
+                    id="contact-email"
+                    name="email"
                     type="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="john@example.com"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 focus:outline-none focus:border-accent-purple transition-all font-medium"
+                    required
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-base text-white focus:outline-none focus:border-accent-purple/50 transition-colors"
                   />
                 </div>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Project Type</label>
-                <select className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 focus:outline-none focus:border-accent-purple transition-all font-medium appearance-none">
-                  <option className="bg-surface">Web Application</option>
-                  <option className="bg-surface">AI Integration</option>
-                  <option className="bg-surface">UI/UX Design</option>
-                  <option className="bg-surface">Other</option>
-                </select>
+
+              <div className="space-y-2">
+                <label htmlFor="contact-project" className="text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">Project Type</label>
+                <div className="relative">
+                  <select
+                    id="contact-project"
+                    name="project"
+                    value={formData.project}
+                    onChange={handleChange}
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-base text-white focus:outline-none focus:border-accent-purple/50 transition-colors appearance-none cursor-pointer"
+                    style={{ background: 'rgba(255,255,255,0.03)' }}
+                  >
+                    <option value="" disabled style={{ background: '#0f0f14', color: '#6b7280' }}>Select a project type...</option>
+                    <option value="Web Application" style={{ background: '#0f0f14' }}>Web Application</option>
+                    <option value="Mobile App" style={{ background: '#0f0f14' }}>Mobile App</option>
+                    <option value="UI/UX Design" style={{ background: '#0f0f14' }}>UI/UX Design</option>
+                    <option value="AI / ML Solution" style={{ background: '#0f0f14' }}>AI / ML Solution</option>
+                    <option value="E-Commerce" style={{ background: '#0f0f14' }}>E-Commerce</option>
+                    <option value="Portfolio / Personal Site" style={{ background: '#0f0f14' }}>Portfolio / Personal Site</option>
+                    <option value="API / Backend" style={{ background: '#0f0f14' }}>API / Backend</option>
+                    <option value="Other" style={{ background: '#0f0f14' }}>Other</option>
+                  </select>
+                  <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 rotate-90 pointer-events-none" />
+                </div>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Your Message</label>
+
+              <div className="space-y-2">
+                <label htmlFor="contact-message" className="text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">Your Message</label>
                 <textarea
+                  id="contact-message"
+                  name="message"
+                  rows={6}
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder="Tell me about your vision..."
-                  rows={4}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 focus:outline-none focus:border-accent-purple transition-all font-medium resize-none"
+                  required
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-base text-white focus:outline-none focus:border-accent-purple/50 transition-colors resize-none"
                 />
               </div>
-              <button className="w-full py-6 bg-accent-purple text-surface font-black rounded-2xl hover:shadow-[0_0_50px_rgba(129,140,248,0.5)] transition-all flex items-center justify-center gap-3 group">
+
+              {error && (
+                <p className="text-red-400 text-xs font-bold tracking-wide">{error}</p>
+              )}
+
+              {sent && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 px-5 py-3 rounded-xl bg-accent-green/10 border border-accent-green/20"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-accent-green" />
+                  <span className="text-xs font-bold text-accent-green">Opening your email client — message ready to send!</span>
+                </motion.div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full py-6 px-10 bg-accent-blue hover:bg-accent-blue/90 text-surface font-black text-base rounded-2xl transition-all shadow-[0_0_30px_rgba(129,140,248,0.2)] flex items-center justify-center gap-3 group"
+              >
                 SEND MESSAGE <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </form>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
   );
 };
 
-const Footer = () => {
+// ── Code Rain Canvas ──────────────────────────────────────────────
+const CodeRain = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<>/={}[]();';
+    const fontSize = 13;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops: number[] = Array(cols).fill(1);
+    const draw = () => {
+      ctx.fillStyle = 'rgba(18,17,17,0.15)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `${fontSize}px monospace`;
+      drops.forEach((y, i) => {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const progress = y / (canvas.height / fontSize);
+        ctx.fillStyle = `rgba(255,75,92,${Math.max(0.03, 0.18 - progress * 0.15)})`;
+        ctx.fillText(char, i * fontSize, y * fontSize);
+        if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      });
+    };
+    const id = setInterval(draw, 45);
+    return () => clearInterval(id);
+  }, []);
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-60" />;
+};
+
+// ── Terminal Lines ─────────────────────────────────────────────────
+const TerminalBoot = ({ active }: { active: boolean }) => {
+  const [visibleLines, setVisibleLines] = useState(0);
+  const lines = [
+    { text: '> Initializing portfolio...', color: '#a1a1aa' },
+    { text: '> Loading skills: [AI, React, Node, Python]', color: '#a1a1aa' },
+    { text: '> Connecting to design system...', color: '#a1a1aa' },
+    { text: '> Building components... ✓', color: '#4ade80' },
+    { text: '> Deploying experience... ✓', color: '#4ade80' },
+    { text: '> Welcome. — Madhusudhanan', color: '#FF4B5C' },
+  ];
+  useEffect(() => {
+    if (!active) return;
+    let i = 0;
+    const t = setInterval(() => {
+      i++;
+      setVisibleLines(i);
+      if (i >= lines.length) clearInterval(t);
+    }, 220);
+    return () => clearInterval(t);
+  }, [active]);
   return (
-    <footer className="py-20 px-6 border-t border-white/5">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-20">
-          <div className="text-2xl font-display font-black tracking-tighter">MADHUSUDHANAN</div>
-          <div className="flex gap-12 text-[10px] font-bold text-gray-500 tracking-[0.3em]">
-            <a href="#" className="hover:text-white transition-colors">TWITTER</a>
-            <a href="#" className="hover:text-white transition-colors">LINKEDIN</a>
-            <a href="#" className="hover:text-white transition-colors">GITHUB</a>
-            <a href="#" className="hover:text-white transition-colors">DRIBBBLE</a>
-          </div>
-        </div>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold text-gray-600 uppercase tracking-widest text-center">
-          <div>BUILT WITH PRECISION BY MADHUSUDHANAN © 2025</div>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-accent-green" />
-            SYSTEMS OPERATIONAL
-          </div>
-          <div>LOCATED IN TAMIL NADU, INDIA</div>
-        </div>
+    <div className="w-full max-w-md font-mono text-xs space-y-1.5 text-left">
+      {lines.slice(0, visibleLines).map((l, i) => (
+        <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} style={{ color: l.color }}>
+          {l.text}
+          {i === visibleLines - 1 && (
+            <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ duration: 0.6, repeat: Infinity }} className="inline-block ml-1 w-1.5 h-3 bg-current align-middle" />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// ── Letter Reveal Name ─────────────────────────────────────────────
+const LetterReveal = ({ text, color, delay = 0 }: { text: string; color: string; delay?: number }) => (
+  <span className="inline-flex">
+    {text.split('').map((ch, i) => (
+      <motion.span
+        key={i}
+        initial={{ opacity: 0, filter: 'blur(8px)', color: 'rgba(80,20,20,0.3)' }}
+        animate={{
+          opacity: 1,
+          filter: 'blur(0px)',
+          color,
+          textShadow: [`0 0 20px ${color}aa`, `0 0 8px ${color}44`, `0 0 0px transparent`],
+        }}
+        transition={{
+          duration: 1.2,
+          delay: delay + i * 0.12,
+          ease: [0.22, 1, 0.36, 1],
+          textShadow: { duration: 1.8, delay: delay + i * 0.12 },
+        }}
+        style={{ display: 'inline-block' }}
+      >
+        {ch === ' ' ? '\u00A0' : ch}
+      </motion.span>
+    ))}
+  </span>
+);
+
+// ── Phase Progress Bar ─────────────────────────────────────────────
+const PhaseBar = ({ progress }: { progress: number }) => {
+  const phases = [
+    { label: 'DESIGN', icon: '✦', threshold: 0 },
+    { label: 'BUILD', icon: '⬡', threshold: 40 },
+    { label: 'DEPLOY', icon: '◈', threshold: 75 },
+  ];
+  return (
+    <div className="w-full max-w-lg px-4">
+      <div className="flex justify-between mb-3">
+        {phases.map((p, i) => {
+          const active = progress >= p.threshold;
+          return (
+            <motion.div key={i} animate={{ opacity: active ? 1 : 0.3 }} className="flex flex-col items-center gap-1">
+              <motion.span animate={{ scale: active ? [1, 1.3, 1] : 1 }} transition={{ duration: 0.3 }} className="text-base" style={{ color: active ? '#FF4B5C' : '#555' }}>{p.icon}</motion.span>
+              <span className="text-[9px] font-black tracking-[0.25em]" style={{ color: active ? '#FF4B5C' : '#444' }}>{p.label}</span>
+            </motion.div>
+          );
+        })}
       </div>
-    </footer>
+      <div className="h-[2px] bg-white/10 rounded-full overflow-hidden relative">
+        <motion.div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #FF4B5C, #ff8c69)' }} />
+        <motion.div className="absolute inset-y-0 left-0 rounded-full blur-sm opacity-60" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #FF4B5C, #ff8c69)' }} />
+      </div>
+      <div className="flex justify-end mt-2">
+        <span className="text-[10px] font-black tracking-widest" style={{ color: '#FF4B5C' }}>{progress}%</span>
+      </div>
+    </div>
+  );
+};
+
+// ── Main Preloader ─────────────────────────────────────────────────
+const Preloader = ({ onComplete }: { onComplete: () => void }) => {
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<'terminal' | 'split'>('terminal');
+  const [roleIndex, setRoleIndex] = useState(0);
+  const roles = ['Full Stack Developer', 'AI Engineer', 'UI/UX Designer', 'Product Builder'];
+  const TOTAL_MS = 6000;
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    // Phase switch: terminal → split at 1.5s
+    const phaseTimer = setTimeout(() => setPhase('split'), 1500);
+
+    // Role cycling
+    const roleTimer = setInterval(() => setRoleIndex(p => (p + 1) % roles.length), 900);
+
+    // Progress bar
+    const steps = TOTAL_MS / 20;
+    let step = 0;
+    const progressTimer = setInterval(() => {
+      step++;
+      setProgress(Math.min(100, Math.round((step / steps) * 100)));
+      if (step >= steps) clearInterval(progressTimer);
+    }, 20);
+
+    // Complete
+    const done = setTimeout(() => {
+      document.body.style.overflow = '';
+      onComplete();
+    }, TOTAL_MS + 300);
+
+    return () => {
+      document.body.style.overflow = '';
+      clearTimeout(phaseTimer);
+      clearTimeout(done);
+      clearInterval(roleTimer);
+      clearInterval(progressTimer);
+    };
+  }, [onComplete]);
+
+  return (
+    <motion.div
+      key="preloader"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, y: '-100%' }}
+      transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
+      style={{ background: '#0c0b0b' }}
+    >
+      {/* Matrix code rain */}
+      <CodeRain />
+
+      {/* Dark center vignette */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 50%, transparent 30%, rgba(12,11,11,0.85) 100%)' }} />
+
+      {/* ─ Content ─ */}
+      <div className="relative z-10 flex flex-col items-center gap-10 w-full px-6">
+
+        {/* PHASE 1 — Terminal boot */}
+        <AnimatePresence>
+          {phase === 'terminal' && (
+            <motion.div key="terminal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}
+              className="w-full max-w-md bg-black/50 border border-white/10 rounded-2xl p-6 backdrop-blur-sm shadow-2xl">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                <span className="ml-2 text-[10px] text-gray-500 font-mono tracking-wider">portfolio.init — bash</span>
+              </div>
+              <TerminalBoot active={phase === 'terminal'} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* PHASE 2 — Split: Role | Name with 3D letter reveal */}
+        <AnimatePresence>
+          {phase === 'split' && (
+            <motion.div key="split" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full max-w-5xl grid grid-cols-2 gap-0 items-center" style={{ perspective: 800 }}>
+              {/* Left — role */}
+              <div className="flex flex-col items-end pr-6 sm:pr-10 border-r border-white/10">
+                <span className="text-[9px] font-black tracking-[0.4em] text-gray-600 uppercase mb-3">Currently</span>
+                <AnimatePresence mode="wait">
+                  <motion.p key={roleIndex} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35 }}
+                    className="text-xl sm:text-2xl md:text-3xl font-black text-right text-white/70 tracking-tight leading-none">
+                    {roles[roleIndex]}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+              {/* Right — name with slow glow reveal */}
+              <div className="pl-6 sm:pl-10">
+                <span className="text-[9px] font-black tracking-[0.4em] text-gray-600 uppercase block mb-4">Portfolio of</span>
+                <div className="font-black tracking-widest leading-tight whitespace-nowrap" style={{ fontSize: 'clamp(1.4rem, 4vw, 3.5rem)' }}>
+                  <LetterReveal text="MADHUSUDHANAN " color="#FF4B5C" delay={0.2} />
+                  <LetterReveal text="N A" color="rgba(255,255,255,0.55)" delay={1.9} />
+                </div>
+                {/* Glow pulse under name */}
+                <motion.div animate={{ opacity: [0.3, 0.8, 0.3], scaleX: [0.8, 1.2, 0.8] }} transition={{ duration: 2.5, repeat: Infinity }}
+                  className="mt-4 h-[2px] w-40 rounded-full" style={{ background: 'linear-gradient(90deg, #FF4B5C, transparent)' }} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase Progress Bar — always visible */}
+        <motion.div className="w-full flex justify-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <PhaseBar progress={progress} />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+const CodeTyping = () => {
+  const [lines, setLines] = useState<string[]>([]);
+  const codeLines = [
+    "import { Builder } from 'future';",
+    "",
+    "const portfolio = new Builder({",
+    "  developer: 'Madhusudhanan',",
+    "  skills: ['AI', 'UI/UX', 'Full Stack'],",
+    "  theme: 'late_night',",
+    "  status: 'deploying...'",
+    "});",
+    "",
+    "portfolio.initialize();"
+  ];
+
+  useEffect(() => {
+    let currentLine = 0;
+    const interval = setInterval(() => {
+      setLines(codeLines.slice(0, currentLine + 1));
+      currentLine++;
+      if (currentLine >= codeLines.length) clearInterval(interval);
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="mb-2 w-full max-w-lg bg-[#0d0d14] rounded-xl border border-white/5 p-4 font-mono text-xs text-gray-300 shadow-2xl relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-8 bg-[#151520] border-b border-white/5 flex items-center px-4 gap-1.5">
+        <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+        <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+        <span className="ml-2 text-[10px] text-gray-500 font-sans tracking-wider">init.ts — Portfolio</span>
+      </div>
+      <div className="pt-8 font-mono text-left min-h-[220px]">
+        {lines.map((line, i) => (
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ duration: 0.2 }}
+            className="whitespace-pre"
+          >
+            <span className="text-gray-600 mr-4 select-none opacity-50">{i + 1}</span>
+            <span dangerouslySetInnerHTML={{ 
+              __html: line
+                .replace(/import|from|const|new/g, '<span class="text-[#c678dd]">$&</span>')
+                .replace(/'[^']*'/g, '<span class="text-[#98c379]">$&</span>')
+                .replace(/({|}|\[|\]|\(|\))/g, '<span class="text-[#56b6c2]">$&</span>')
+                .replace(/(developer|skills|theme|status)/g, '<span class="text-[#e06c75]">$&</span>')
+                .replace(/(Builder|portfolio|initialize)/g, '<span class="text-[#61afef]">$&</span>')
+            }} />
+          </motion.div>
+        ))}
+        <motion.div 
+          animate={{ opacity: [1, 0, 1] }} 
+          transition={{ duration: 0.8, repeat: Infinity }} 
+          className="inline-block w-2 h-4 bg-[#61afef] ml-2 mt-1 align-middle" 
+        />
+      </div>
+    </div>
   );
 };
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -990,13 +1393,32 @@ export default function App() {
     restDelta: 0.001
   });
 
+  useEffect(() => {
+    const lenis = new Lenis({
+      lerp: 0.02,
+      smoothWheel: true,
+      syncTouch: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-surface selection:bg-accent-purple selection:text-white noise">
+    <div className="min-h-screen bg-surface selection:bg-accent-purple selection:text-white">
+      <AnimatePresence mode="wait">
+        {loading && <Preloader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
+
       {/* Progress Bar */}
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-accent-purple z-[60] origin-left" style={{ scaleX }} />
 
       <Navbar />
-      <main>
+      <main className="outline-none">
         <Hero />
         <BentoAbout />
         <Services />
@@ -1005,7 +1427,10 @@ export default function App() {
         <Certifications />
         <Contact />
       </main>
-      <Footer />
+
+      <footer className="py-12 px-6 border-t border-white/5 text-center text-[9px] font-black text-gray-500 tracking-[0.5em] uppercase">
+        © 2026 MADHUSUDHANAN N A — ALL RIGHTS RESERVED
+      </footer>
     </div>
   );
 }
