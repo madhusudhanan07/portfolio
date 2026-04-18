@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
 import {
   Github,
   Linkedin,
@@ -230,10 +230,10 @@ const DecryptedText = ({ text, className }: { text: string; className?: string }
   );
 };
 
-const Reveal = ({ children, delay = 0, y = 30, x = 0, scale = 1, duration = 0.8, className = "", once = true, mask = false, key }: { children: React.ReactNode, delay?: number, y?: number, x?: number, scale?: number, duration?: number, className?: string, once?: boolean, mask?: boolean, key?: React.Key }) => {
+const Reveal = ({ children, delay = 0, y = 30, x = 0, scale = 1, duration = 0.8, className = "", once = true, mask = false }: { children: React.ReactNode, delay?: number, y?: number, x?: number, scale?: number, duration?: number, className?: string, once?: boolean, mask?: boolean }) => {
   if (mask) {
     return (
-      <div className={cn("overflow-hidden", className)} key={key}>
+      <div className={cn("overflow-hidden", className)}>
         <motion.div
           initial={{ y: "100%" }}
           whileInView={{ y: 0 }}
@@ -247,7 +247,6 @@ const Reveal = ({ children, delay = 0, y = 30, x = 0, scale = 1, duration = 0.8,
   }
   return (
     <motion.div
-      key={key}
       initial={{ opacity: 0, y, x, scale }}
       whileInView={{ opacity: 1, y: 0, x: 0, scale: 1 }}
       viewport={{ once, margin: "-100px" }}
@@ -700,7 +699,7 @@ const Services = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-32 px-6 bg-white/[0.01]">
+    <section id="services" className="py-24 px-6 bg-white/[0.01]">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           label="Expertise"
