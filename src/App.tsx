@@ -264,7 +264,7 @@ const SectionHeader = ({ title, label, subtitle }: { title: string; label?: Reac
       {label && <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] mb-4 block whitespace-nowrap">{label}</span>}
     </Reveal>
     <Reveal mask duration={1} delay={0.2}>
-      <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-6 text-white uppercase">{title}</h2>
+      <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-[0.9] mb-6 text-white uppercase">{title}</h2>
     </Reveal>
     {subtitle && (
       <Reveal y={20} delay={0.4} duration={0.8}>
@@ -497,7 +497,7 @@ const ThreeDCard = () => {
 
 const Hero = () => {
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden mesh-gradient">
+    <section id="home" className="relative min-h-screen flex items-center pt-24 pb-16 px-6 overflow-hidden mesh-gradient">
       {/* Subtle animated glowing blobs */}
       <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-accent-purple/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
       <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }} className="absolute bottom-1/4 right-10 w-[600px] h-[600px] bg-accent-blue/10 blur-[130px] rounded-full pointer-events-none mix-blend-screen" />
@@ -517,7 +517,7 @@ const Hero = () => {
           </Reveal>
 
           <Reveal y={40} duration={1} delay={0.3} mask>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
               MADHUSUDHANAN N A
             </h1>
           </Reveal>
@@ -579,7 +579,7 @@ const Hero = () => {
           className="lg:col-span-5 relative lg:translate-x-12 z-50 origin-center"
           style={{ perspective: 1500, transformStyle: 'preserve-3d' }}
         >
-          <div className="max-w-[450px] mx-auto lg:ml-auto">
+          <div className="max-w-[380px] mx-auto lg:ml-auto">
             <ThreeDCard />
           </div>
         </motion.div>
@@ -1021,7 +1021,7 @@ const Contact = () => {
                 <span className="text-[10px] font-bold text-accent-purple uppercase tracking-[0.4em] block">Get in Touch</span>
               </Reveal>
               <Reveal mask duration={1} delay={0.2}>
-                <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] text-white">
                   Let's <br /> build the <br />
                   <span className="text-accent-blue font-black uppercase">future.</span>
                 </h2>
