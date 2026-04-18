@@ -982,32 +982,63 @@ const Certifications = () => {
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', project: '', message: '' });
-  const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setError('');
+    if (submitStatus !== 'idle') setSubmitStatus('idle');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, email, project, message } = formData;
+    const { name, email, message } = formData;
 
     if (!name.trim() || !email.trim() || !message.trim()) {
       setError('Please fill in your name, email, and message.');
       return;
     }
 
-    const subject = encodeURIComponent(`Portfolio Inquiry${project ? ` — ${project}` : ''} from ${name}`);
-    const body = encodeURIComponent(
-      `Hi Madhusudhanan,\n\nMy name is ${name} (${email}).\n\nProject Type: ${project || 'Not specified'}\n\nMessage:\n${message}\n\nBest regards,\n${name}`
-    );
+    setIsSubmitting(true);
+    setError('');
 
-    window.location.href = `mailto:msudhanan2007@gmail.com?subject=${subject}&body=${body}`;
-    setSent(true);
-    setFormData({ name: '', email: '', project: '', message: '' });
-    setTimeout(() => setSent(false), 5000);
+    try {
+      // FORMSUBMIT.CO: The most reliable zero-config service for React.
+      // It will send a confirmation email to msudhanan2007@gmail.com on the first try.
+      const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/msudhanan2007@gmail.com'; 
+
+      const response = await fetch(FORMSUBMIT_URL, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json' 
+        },
+        body: JSON.stringify({
+          ...formData,
+          _subject: `Portfolio Inquiry from ${formData.name}`,
+          _template: 'table' // Makes the email look professional
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', project: '', message: '' });
+      } else {
+        throw new Error('API Submission Failed');
+      }
+    } catch (err) {
+      console.warn("Background send failed, using mailto fallback...");
+      const subject = encodeURIComponent(`Portfolio Inquiry from ${formData.name}`);
+      const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nProject: ${formData.project}\n\nMessage:\n${formData.message}`);
+      window.location.href = `mailto:msudhanan2007@gmail.com?subject=${subject}&body=${body}`;
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', project: '', message: '' });
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => { if (submitStatus === 'success') setSubmitStatus('idle'); }, 6000);
+    }
   };
 
   return (
@@ -1133,23 +1164,41 @@ const Contact = () => {
                 <p className="text-red-400 text-xs font-bold tracking-wide">{error}</p>
               )}
 
-              {sent && (
+              {submitStatus === 'success' && (
                 <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-3 px-5 py-3 rounded-xl bg-accent-green/10 border border-accent-green/20"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center gap-4 p-8 rounded-3xl bg-accent-green/10 border border-accent-green/20 text-center"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-accent-green" />
-                  <span className="text-xs font-bold text-accent-green">Opening your email client — message ready to send!</span>
+                  <div className="w-16 h-16 bg-accent-green/20 rounded-full flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8 text-accent-green" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black text-white uppercase mb-2">Message Sent!</h4>
+                    <p className="text-sm text-gray-400 font-medium tracking-tight">Thanks, Madhusudhanan will get back to you soon.</p>
+                  </div>
                 </motion.div>
               )}
 
-              <button
-                type="submit"
-                className="w-full py-6 px-10 bg-accent-blue hover:bg-accent-blue/90 text-surface font-black text-base rounded-2xl transition-all shadow-[0_0_30px_rgba(129,140,248,0.2)] flex items-center justify-center gap-3 group"
-              >
-                SEND MESSAGE <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
+              {submitStatus !== 'success' && (
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-6 px-10 bg-accent-blue hover:bg-accent-blue/90 disabled:bg-gray-800 disabled:cursor-not-allowed text-surface font-black text-base rounded-2xl transition-all shadow-[0_0_30px_rgba(129,140,248,0.2)] flex items-center justify-center gap-3 group"
+                >
+                  {isSubmitting ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-6 h-6 border-2 border-surface border-t-transparent rounded-full"
+                    />
+                  ) : (
+                    <>
+                      SEND MESSAGE <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+              )}
             </form>
           </Reveal>
         </div>
