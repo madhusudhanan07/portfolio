@@ -327,11 +327,11 @@ const Navbar = () => {
             transition={{ duration: 0.6 }}
             className="flex items-center gap-3"
           >
-            <div className="hidden sm:flex items-center gap-2">
-              <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white">
+            <div className="flex items-center gap-2">
+              <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white">
+              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
                 <Github className="w-4 h-4" />
               </a>
             </div>
