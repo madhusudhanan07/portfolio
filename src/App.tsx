@@ -517,7 +517,7 @@ const Hero = () => {
           </Reveal>
 
           <Reveal y={40} duration={1} delay={0.3} mask>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase">
               MADHUSUDHANAN N A
             </h1>
           </Reveal>
@@ -1366,27 +1366,36 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
         <AnimatePresence>
           {phase === 'split' && (
             <motion.div key="split" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-5xl grid grid-cols-2 gap-0 items-center" style={{ perspective: 800 }}>
+              className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 items-center justify-center px-4" style={{ perspective: 1000 }}>
               {/* Left — role */}
-              <div className="flex flex-col items-end pr-6 sm:pr-10 border-r border-white/10">
-                <span className="text-[9px] font-black tracking-[0.4em] text-gray-600 uppercase mb-3">Currently</span>
+              <div className="flex flex-col items-center md:items-end md:pr-12 md:border-r border-white/10 text-center md:text-right">
+                <span className="text-[10px] sm:text-[11px] font-black tracking-[0.45em] text-gray-600 uppercase mb-4 opacity-70">Currently</span>
                 <AnimatePresence mode="wait">
-                  <motion.p key={roleIndex} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35 }}
-                    className="text-xl sm:text-2xl md:text-3xl font-black text-right text-white/70 tracking-tight leading-none">
+                  <motion.p key={roleIndex} 
+                    initial={{ opacity: 0, scale: 0.9, y: 10 }} 
+                    animate={{ opacity: 1, scale: 1, y: 0 }} 
+                    exit={{ opacity: 0, scale: 1.1, y: -10 }} 
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="text-2xl sm:text-3xl lg:text-4xl font-black text-white/80 tracking-tight leading-none min-h-[1.2em]">
                     {roles[roleIndex]}
                   </motion.p>
                 </AnimatePresence>
               </div>
               {/* Right — name with slow glow reveal */}
-              <div className="pl-6 sm:pl-10">
-                <span className="text-[9px] font-black tracking-[0.4em] text-gray-600 uppercase block mb-4">Portfolio of</span>
-                <div className="font-black tracking-widest leading-tight whitespace-nowrap" style={{ fontSize: 'clamp(1.4rem, 4vw, 3.5rem)' }}>
-                  <LetterReveal text="MADHUSUDHANAN " color="#FF4B5C" delay={0.2} />
-                  <LetterReveal text="N A" color="rgba(255,255,255,0.55)" delay={1.9} />
+              <div className="flex flex-col items-center md:items-start md:pl-12 text-center md:text-left">
+                <span className="text-[10px] sm:text-[11px] font-black tracking-[0.45em] text-gray-600 uppercase block mb-4 opacity-70">Portfolio of</span>
+                <div className="font-black tracking-widest leading-[1.1] relative group" style={{ fontSize: 'clamp(1.5rem, 6vw, 3.8rem)' }}>
+                  <div className="flex flex-wrap md:flex-nowrap justify-center md:justify-start items-center gap-y-2">
+                    <LetterReveal text="MADHUSUDHANAN " color="#FF4B5C" delay={0.2} />
+                    <LetterReveal text="N A" color="rgba(255,255,255,0.6)" delay={1.9} />
+                  </div>
+                  {/* Glow pulse under name */}
+                  <motion.div 
+                    animate={{ opacity: [0.3, 0.8, 0.3], scaleX: [0.8, 1.2, 0.8] }} 
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="mt-6 md:mt-8 h-[2px] w-full max-w-[200px] md:max-w-[300px] bg-gradient-to-r from-[#FF4B5C] via-[#FF4B5C]/50 to-transparent mx-auto md:mx-0 rounded-full blur-[1px]" 
+                  />
                 </div>
-                {/* Glow pulse under name */}
-                <motion.div animate={{ opacity: [0.3, 0.8, 0.3], scaleX: [0.8, 1.2, 0.8] }} transition={{ duration: 2.5, repeat: Infinity }}
-                  className="mt-4 h-[2px] w-40 rounded-full" style={{ background: 'linear-gradient(90deg, #FF4B5C, transparent)' }} />
               </div>
             </motion.div>
           )}
