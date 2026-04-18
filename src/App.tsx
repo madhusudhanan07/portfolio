@@ -517,9 +517,8 @@ const Hero = () => {
           </Reveal>
 
           <Reveal y={40} duration={1} delay={0.3} mask>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter uppercase whitespace-nowrap">
-              <span className="text-gradient">MADHUSUDHANAN </span>
-              <span className="text-white/20">N A</span>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black leading-[0.9] mb-6 tracking-tighter text-gradient uppercase whitespace-nowrap">
+              MADHUSUDHANAN N A
             </h1>
           </Reveal>
 
