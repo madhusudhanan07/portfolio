@@ -23,11 +23,14 @@ import {
   Server,
   Database,
   Cloud,
+  FileText,
   Palette,
   Bot,
   Sparkles,
   Send,
-  MessageSquare
+  MessageSquare,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import Lenis from 'lenis';
@@ -274,7 +277,7 @@ const SectionHeader = ({ title, label, subtitle }: { title: string; label?: Reac
   </div>
 );
 
-const Navbar = () => {
+const Navbar = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -335,8 +338,8 @@ const Navbar = () => {
                 <Github className="w-4 h-4" />
               </a>
             </div>
-            <button className="hidden sm:flex items-center gap-2 px-6 py-3 glass rounded-full text-xs font-bold tracking-widest hover:bg-white/10 transition-all text-white">
-              RESUME <Download className="w-4 h-4" />
+            <button onClick={onResumeOpen} className="hidden sm:flex items-center gap-2 px-6 py-3 glass rounded-full text-xs font-bold tracking-widest hover:bg-white/10 transition-all text-white border border-white/5">
+              RESUME
             </button>
           </motion.div>
           <button className="md:hidden text-white p-2 glass rounded-lg" onClick={() => setIsOpen(!isOpen)}>
@@ -495,7 +498,7 @@ const ThreeDCard = () => {
   );
 };
 
-const Hero = () => {
+const Hero = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24 pb-16 px-6 overflow-hidden mesh-gradient">
       {/* Subtle animated glowing blobs */}
@@ -540,9 +543,9 @@ const Hero = () => {
                 VIEW PROJECTS <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </a>
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-10 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white">
-              DOWNLOAD RESUME <Download className="w-4 h-4" />
-            </a>
+            <button onClick={onResumeOpen} className="flex items-center gap-2 px-10 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white shadow-xl shadow-black/50">
+              RESUME PREVIEW
+            </button>
           </Reveal>
 
           <Reveal y={20} duration={0.8} delay={1.0} className="mt-12 pt-8 border-t border-white/5 flex gap-10 items-center w-max">
@@ -1007,13 +1010,13 @@ const Contact = () => {
     try {
       // FORMSUBMIT.CO: The most reliable zero-config service for React.
       // It will send a confirmation email to msudhanan2007@gmail.com on the first try.
-      const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/msudhanan2007@gmail.com'; 
+      const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/msudhanan2007@gmail.com';
 
       const response = await fetch(FORMSUBMIT_URL, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json' 
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           ...formData,
@@ -1416,10 +1419,10 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
               <div className="flex flex-col items-center md:items-end md:pr-16 md:border-r border-white/10 text-center md:text-right">
                 <span className="text-[11px] sm:text-[13px] font-black tracking-[0.5em] text-gray-500 uppercase mb-4 opacity-80">Currently</span>
                 <AnimatePresence mode="wait">
-                  <motion.p key={roleIndex} 
-                    initial={{ opacity: 0, scale: 0.9, y: 10 }} 
-                    animate={{ opacity: 1, scale: 1, y: 0 }} 
-                    exit={{ opacity: 0, scale: 1.1, y: -10 }} 
+                  <motion.p key={roleIndex}
+                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 1.1, y: -10 }}
                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                     className="text-2xl sm:text-3xl lg:text-4xl font-black text-white/90 tracking-tight leading-none min-h-[1.2em]">
                     {roles[roleIndex]}
@@ -1433,10 +1436,10 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
                   <LetterReveal text="MADHUSUDHANAN " color="#FF4B5C" delay={0.2} />
                   <LetterReveal text="N A" color="#555" delay={2.0} />
                   {/* Glow pulse under name */}
-                  <motion.div 
-                    animate={{ opacity: [0.3, 0.8, 0.3], scaleX: [0.8, 1.2, 0.8] }} 
+                  <motion.div
+                    animate={{ opacity: [0.3, 0.8, 0.3], scaleX: [0.8, 1.2, 0.8] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    className="mt-6 md:mt-8 h-[1px] w-full bg-gradient-to-r from-[#FF4B5C] via-[#FF4B5C]/50 to-transparent mx-auto md:mx-0 rounded-full blur-[1px]" 
+                    className="mt-6 md:mt-8 h-[1px] w-full bg-gradient-to-r from-[#FF4B5C] via-[#FF4B5C]/50 to-transparent mx-auto md:mx-0 rounded-full blur-[1px]"
                   />
                 </div>
               </div>
@@ -1518,6 +1521,7 @@ const CodeTyping = () => {
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -1549,9 +1553,9 @@ export default function App() {
       {/* Progress Bar */}
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-accent-purple z-[60] origin-left" style={{ scaleX }} />
 
-      <Navbar />
+      <Navbar onResumeOpen={() => setIsResumeOpen(true)} />
       <main className="outline-none">
-        <Hero />
+        <Hero onResumeOpen={() => setIsResumeOpen(true)} />
         <BentoAbout />
         <Services />
         <Skills />
@@ -1560,9 +1564,122 @@ export default function App() {
         <Contact />
       </main>
 
+      <AnimatePresence>
+        {isResumeOpen && (
+          <ResumeModal isOpen={isResumeOpen} onClose={() => setIsResumeOpen(false)} />
+        )}
+      </AnimatePresence>
+
       <footer className="py-12 px-6 border-t border-white/5 text-center text-[9px] font-black text-gray-500 tracking-[0.5em] uppercase">
         © 2026 MADHUSUDHANAN N A — ALL RIGHTS RESERVED
       </footer>
     </div>
   );
 }
+
+// --- Professional Resume Preview Modal ---
+const ResumeModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [htmlContent, setHtmlContent] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const loadResume = async () => {
+      try {
+        const response = await fetch(`/resume.docx?v=${new Date().getTime()}`);
+        if (!response.ok) throw new Error('File not found');
+        const arrayBuffer = await response.arrayBuffer();
+        // @ts-ignore
+        const result = await window.mammoth.convertToHtml({ arrayBuffer });
+        setHtmlContent(result.value);
+      } catch (err) {
+        console.error("Failed to render resume:", err);
+        setHtmlContent("<p style='text-align: center; padding-top: 40px;'>Unable to load resume preview. Please click the close button and try downloading.</p>");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (isOpen) loadResume();
+  }, [isOpen]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    setShowScrollTop(e.currentTarget.scrollTop > 400);
+  };
+
+  const scrollToTop = () => {
+    containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      ref={containerRef}
+      onScroll={handleScroll}
+      data-lenis-prevent
+      className="fixed inset-0 z-[100] bg-[#0a0a0c]/95 backdrop-blur-xl overflow-y-auto custom-scrollbar scroll-smooth h-screen w-screen"
+    >
+      {/* Absolute Dynamic Controls */}
+      <div className="fixed top-8 right-8 flex gap-3 z-[110] pointer-events-auto">
+        <AnimatePresence>
+          {showScrollTop && (
+            <motion.button
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={scrollToTop}
+              className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all backdrop-blur-md shadow-2xl"
+              title="Return to Top"
+            >
+              <ChevronUp className="w-5 h-5" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+        
+        <a 
+          href="/resume.docx" 
+          download 
+          className="p-4 bg-accent-blue/20 hover:bg-accent-blue/30 border border-accent-blue/30 rounded-full text-white transition-all backdrop-blur-md shadow-2xl flex items-center gap-2 group"
+          title="Download Original File"
+        >
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 text-[10px] font-black uppercase tracking-widest px-0 group-hover:px-2">Download Resume</span>
+          <Download className="w-5 h-5" />
+        </a>
+
+        <button 
+          onClick={onClose}
+          className="p-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-full text-white transition-all backdrop-blur-md shadow-2xl"
+          title="Close Preview"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="min-h-screen py-24 px-4 md:px-10 flex justify-center items-start">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-40 gap-4">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-10 h-10 border-2 border-accent-blue border-t-transparent rounded-full"
+            />
+            <span className="text-[10px] font-black tracking-[0.3em] text-gray-500 uppercase">Generating Elite Preview...</span>
+          </div>
+        ) : (
+          <motion.div 
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="w-full max-w-[900px] bg-white shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-lg text-black resume-content relative overflow-hidden"
+          >
+            {/* Template Header Accents */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-blue via-accent-purple to-accent-blue opacity-50" />
+            
+            <div className="p-12 sm:p-20 md:p-24" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
