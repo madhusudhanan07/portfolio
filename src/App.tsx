@@ -299,7 +299,9 @@ const Navbar = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
           transition={{ duration: 0.6 }}
           className="text-xl font-display font-black tracking-tighter flex items-center gap-3"
         >
-          <div className="w-8 h-8 bg-accent-purple rounded-lg flex items-center justify-center text-surface text-sm font-bold">M</div>
+          <div className="w-9 h-9 bg-accent-purple rounded-full overflow-hidden flex items-center justify-center border border-white/10 shrink-0">
+            <img src="/madhu.photo.png" alt="M" className="w-full h-full object-cover" />
+          </div>
           <span className="hidden sm:inline text-white">MADHUSUDHANAN N A</span>
         </motion.div>
 
@@ -1641,11 +1643,11 @@ const ResumeModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
         <a 
           href="/resume.docx" 
           download 
-          className="p-4 bg-accent-blue/20 hover:bg-accent-blue/30 border border-accent-blue/30 rounded-full text-white transition-all backdrop-blur-md shadow-2xl flex items-center gap-2 group"
+          className="px-8 py-4 bg-accent-blue/20 hover:bg-accent-blue/30 border border-accent-blue/30 rounded-full text-white transition-all backdrop-blur-md shadow-2xl flex items-center gap-3 overflow-hidden group"
           title="Download Original File"
         >
-          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 text-[10px] font-black uppercase tracking-widest px-0 group-hover:px-2">Download Resume</span>
-          <Download className="w-5 h-5" />
+          <span className="text-[10px] font-black uppercase tracking-widest">Download Resume</span>
+          <Download className="w-4 h-4" />
         </a>
 
         <button 
