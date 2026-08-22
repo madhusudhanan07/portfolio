@@ -94,6 +94,47 @@ const SKILLS: Skill[] = [
 
 const PROJECTS: Project[] = [
   {
+    title: 'E-Commerce Store',
+    description: 'Problem: Traditional platforms lack streamlined browsing and checkout. Solution: Full-stack store with auth, cart, orders, and admin dashboard.',
+    problem: 'Traditional online shopping platforms can be complex to manage and may lack a streamlined experience for browsing, authentication, and checkout.',
+    solution: 'Developed a full-stack e-commerce platform with product browsing, categories, authentication, cart, checkout, orders, and responsive UI.',
+    images: [
+      '/ecommerce-slide-1.jpg',
+      '/ecommerce-slide-2.jpg',
+      '/ecommerce-slide-3.jpg',
+      '/ecommerce-slide-4.jpg',
+    ],
+    slideLabels: ['Home', 'Categories', 'My Orders', 'Admin Dashboard'],
+    tags: ['React.js', 'TypeScript', 'Node.js', 'Express.js', 'Firebase', 'Cloud Firestore', 'REST API'],
+    features: ['Product Browsing', 'Cart', 'Checkout', 'Auth', 'Orders', 'Admin Dashboard'],
+    role: 'Full Stack Developer',
+    medal: '🚀',
+    medalColor: '#4ade80',
+    rank: '#01',
+    year: '2026',
+    links: { live: 'https://new-ecommerce-store.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_E-commerce-store.git' }
+  },
+  {
+    title: 'SOCIAL MEDIA PLATFORM',
+    description: 'Problem: Traditional social platforms can make it difficult to manage posts, interactions, messaging, and user connections in one streamlined experience. Solution: Developed a full-stack social media platform with user authentication, profiles, posts, likes, comments, follows, notifications, messaging, and saved posts.',
+    problem: 'Traditional social platforms can make it difficult to manage posts, interactions, messaging, and user connections in one streamlined experience.',
+    solution: 'Developed a full-stack social media platform with user authentication, profiles, posts, likes, comments, follows, notifications, messaging, and saved posts.',
+    images: [
+      '/social-media-1.png',
+      '/social-media-2.png',
+      '/social-media-3.png',
+    ],
+    slideLabels: ['Welcome Page', 'Home Feed', 'User Settings'],
+    tags: ['React.js', 'JavaScript', 'Node.js', 'Express.js', 'Firebase', 'Cloud Firestore', 'REST API'],
+    features: ['User Authentication', 'User Profiles', 'Posts', 'Likes & Comments', 'Follow System', 'Notifications', 'Messaging', 'Saved Posts'],
+    role: 'FULL STACK WEB APPLICATION',
+    medal: '💬',
+    medalColor: '#3b82f6',
+    rank: '#02',
+    year: '2026',
+    links: { live: 'https://social-media-blond-sigma.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_Social-Media-Platform.git' }
+  },
+  {
     title: 'AI Resume Maker',
     description: 'Problem: Students struggle to build professional resumes. Solution: AI-powered tool for smart formatting and suggestions.',
     problem: 'Many students struggle to build structured and professional resumes.',
@@ -109,7 +150,7 @@ const PROJECTS: Project[] = [
     role: 'Full Stack Developer',
     medal: '🥇',
     medalColor: '#ffd700',
-    rank: '#01',
+    rank: '#03',
     year: '2025',
     links: { live: 'https://ai-resume-maker-63dcf.web.app', github: '#' }
   },
@@ -128,7 +169,7 @@ const PROJECTS: Project[] = [
     role: 'Developer',
     medal: '🥈',
     medalColor: '#C0C0C0',
-    rank: '#02',
+    rank: '#04',
     year: '2025',
     links: { live: 'https://voicebot-sooty.vercel.app/', github: '#' }
   },
@@ -148,7 +189,7 @@ const PROJECTS: Project[] = [
     role: 'Frontend Developer',
     medal: '🥉',
     medalColor: '#CD7F32',
-    rank: '#03',
+    rank: '#05',
     year: '2025',
     links: { live: 'https://ayaara-ec37e.web.app/', github: '#' }
   },
@@ -169,50 +210,9 @@ const PROJECTS: Project[] = [
     role: 'Lead Developer',
     medal: '🎨',
     medalColor: '#818cf8',
-    rank: '#04',
+    rank: '#06',
     year: '2025',
     links: { live: 'https://namma-madurai1.web.app/', github: '#' }
-  },
-  {
-    title: 'E-Commerce Store',
-    description: 'Problem: Traditional platforms lack streamlined browsing and checkout. Solution: Full-stack store with auth, cart, orders, and admin dashboard.',
-    problem: 'Traditional online shopping platforms can be complex to manage and may lack a streamlined experience for browsing, authentication, and checkout.',
-    solution: 'Developed a full-stack e-commerce platform with product browsing, categories, authentication, cart, checkout, orders, and responsive UI.',
-    images: [
-      '/ecommerce-slide-1.jpg',
-      '/ecommerce-slide-2.jpg',
-      '/ecommerce-slide-3.jpg',
-      '/ecommerce-slide-4.jpg',
-    ],
-    slideLabels: ['Home', 'Categories', 'My Orders', 'Admin Dashboard'],
-    tags: ['React.js', 'TypeScript', 'Node.js', 'Express.js', 'Firebase', 'Cloud Firestore', 'REST API'],
-    features: ['Product Browsing', 'Cart', 'Checkout', 'Auth', 'Orders', 'Admin Dashboard'],
-    role: 'Full Stack Developer',
-    medal: '🚀',
-    medalColor: '#4ade80',
-    rank: '#05',
-    year: '2026',
-    links: { live: 'https://new-ecommerce-store.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_E-commerce-store.git' }
-  },
-  {
-    title: 'SOCIAL MEDIA PLATFORM',
-    description: 'Problem: Traditional social platforms can make it difficult to manage posts, interactions, messaging, and user connections in one streamlined experience. Solution: Developed a full-stack social media platform with user authentication, profiles, posts, likes, comments, follows, notifications, messaging, and saved posts.',
-    problem: 'Traditional social platforms can make it difficult to manage posts, interactions, messaging, and user connections in one streamlined experience.',
-    solution: 'Developed a full-stack social media platform with user authentication, profiles, posts, likes, comments, follows, notifications, messaging, and saved posts.',
-    images: [
-      '/social-media-1.png',
-      '/social-media-2.png',
-      '/social-media-3.png',
-    ],
-    slideLabels: ['Welcome Page', 'Home Feed', 'User Settings'],
-    tags: ['React.js', 'JavaScript', 'Node.js', 'Express.js', 'Firebase', 'Cloud Firestore', 'REST API'],
-    features: ['User Authentication', 'User Profiles', 'Posts', 'Likes & Comments', 'Follow System', 'Notifications', 'Messaging', 'Saved Posts'],
-    role: 'FULL STACK WEB APPLICATION',
-    medal: '💬',
-    medalColor: '#3b82f6',
-    rank: '#06',
-    year: '2026',
-    links: { live: 'https://social-media-blond-sigma.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_Social-Media-Platform.git' }
   },
 ];
 
