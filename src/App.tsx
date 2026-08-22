@@ -194,6 +194,26 @@ const PROJECTS: Project[] = [
     year: '2026',
     links: { live: 'https://new-ecommerce-store.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_E-commerce-store.git' }
   },
+  {
+    title: 'SOCIAL MEDIA PLATFORM',
+    description: 'Problem: Traditional social platforms can make it difficult to manage posts, interactions, messaging, and user connections in one streamlined experience. Solution: Developed a full-stack social media platform with user authentication, profiles, posts, likes, comments, follows, notifications, messaging, and saved posts.',
+    problem: 'Traditional social platforms can make it difficult to manage posts, interactions, messaging, and user connections in one streamlined experience.',
+    solution: 'Developed a full-stack social media platform with user authentication, profiles, posts, likes, comments, follows, notifications, messaging, and saved posts.',
+    images: [
+      '/social-media-1.png',
+      '/social-media-2.png',
+      '/social-media-3.png',
+    ],
+    slideLabels: ['Welcome Page', 'Home Feed', 'User Settings'],
+    tags: ['React.js', 'JavaScript', 'Node.js', 'Express.js', 'Firebase', 'Cloud Firestore', 'REST API'],
+    features: ['User Authentication', 'User Profiles', 'Posts', 'Likes & Comments', 'Follow System', 'Notifications', 'Messaging', 'Saved Posts'],
+    role: 'FULL STACK WEB APPLICATION',
+    medal: '💬',
+    medalColor: '#3b82f6',
+    rank: '#06',
+    year: '2026',
+    links: { live: 'https://social-media-blond-sigma.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_Social-Media-Platform.git' }
+  },
 ];
 
 
