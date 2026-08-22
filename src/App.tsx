@@ -98,7 +98,12 @@ const PROJECTS: Project[] = [
     description: 'Problem: Students struggle to build professional resumes. Solution: AI-powered tool for smart formatting and suggestions.',
     problem: 'Many students struggle to build structured and professional resumes.',
     solution: 'Developed an AI-powered tool that generates resumes with proper formatting and smart content suggestions.',
-    image: '/ai-resume-maker.png',
+    images: [
+      '/ai-resume-1.png',
+      '/ai-resume-2.png',
+      '/ai-resume-3.png',
+    ],
+    slideLabels: ['Landing Page', 'AI Chat Assistant', 'Live Preview & Scoring'],
     tags: ['React', 'Firebase', 'Gemini API'],
     features: ['Resume templates', 'AI Suggestions'],
     role: 'Full Stack Developer',
@@ -113,7 +118,11 @@ const PROJECTS: Project[] = [
     description: 'Problem: Manual input is slow. Solution: Voice-enabled system for real-time speech processing and response.',
     problem: 'Traditional interfaces require manual input.',
     solution: 'Built a voice-enabled system that processes speech and responds accordingly in real time.',
-    image: '/voice-bot-1.png',
+    images: [
+      '/voicebot-slide-1.png',
+      '/voicebot-slide-2.png',
+    ],
+    slideLabels: ['Home & Microphone', 'Activities & Relief'],
     tags: ['JavaScript', 'Web Speech API'],
     features: ['Voice input', 'Real-time response'],
     role: 'Developer',
@@ -128,7 +137,12 @@ const PROJECTS: Project[] = [
     description: 'Problem: No unified student portal for career paths. Solution: AI portal for motivation, skills, and IoT monitoring.',
     problem: 'Students lack a unified platform for career guidance and monitoring.',
     solution: 'Comprehensive web app with real-time dashboard and AI career assistant.',
-    image: '/ayaara-1.png',
+    images: [
+      '/ayaara-slide-1.png',
+      '/ayaara-slide-2.png',
+      '/ayaara-slide-3.png',
+    ],
+    slideLabels: ['Dashboard', 'Skill Assessment', 'Inner Hero Quest'],
     tags: ['React', 'Firebase', 'IoT'],
     features: ['Dashboard', 'AI Assistant'],
     role: 'Frontend Developer',
@@ -143,7 +157,13 @@ const PROJECTS: Project[] = [
     description: 'Problem: Fragmented civic issue reporting. Solution: Smart city platform for utility location and cleanliness tracking.',
     problem: 'Citizens lack a unified platform to report civic issues.',
     solution: 'Smart city platform with interactive maps and clean score dashboards.',
-    image: '/namma-1.png',
+    images: [
+      '/namma-slide-1.png',
+      '/namma-slide-2.png',
+      '/namma-slide-3.png',
+      '/namma-slide-4.png',
+    ],
+    slideLabels: ['Landing Page', 'Role Selection', 'Interactive Map', 'Citizen Dashboard'],
     tags: ['React', 'Firebase', 'Maps API'],
     features: ['Real-time reporting', 'City Map'],
     role: 'Lead Developer',
@@ -153,7 +173,29 @@ const PROJECTS: Project[] = [
     year: '2025',
     links: { live: 'https://namma-madurai1.web.app/', github: '#' }
   },
+  {
+    title: 'E-Commerce Store',
+    description: 'Problem: Traditional platforms lack streamlined browsing and checkout. Solution: Full-stack store with auth, cart, orders, and admin dashboard.',
+    problem: 'Traditional online shopping platforms can be complex to manage and may lack a streamlined experience for browsing, authentication, and checkout.',
+    solution: 'Developed a full-stack e-commerce platform with product browsing, categories, authentication, cart, checkout, orders, and responsive UI.',
+    images: [
+      '/ecommerce-slide-1.jpg',
+      '/ecommerce-slide-2.jpg',
+      '/ecommerce-slide-3.jpg',
+      '/ecommerce-slide-4.jpg',
+    ],
+    slideLabels: ['Home', 'Categories', 'My Orders', 'Admin Dashboard'],
+    tags: ['React.js', 'TypeScript', 'Node.js', 'Express.js', 'Firebase', 'Cloud Firestore', 'REST API'],
+    features: ['Product Browsing', 'Cart', 'Checkout', 'Auth', 'Orders', 'Admin Dashboard'],
+    role: 'Full Stack Developer',
+    medal: '🚀',
+    medalColor: '#4ade80',
+    rank: '#05',
+    year: '2026',
+    links: { live: 'https://new-ecommerce-store.vercel.app/', github: 'https://github.com/madhusudhanan07/CodeAlpha_E-commerce-store.git' }
+  },
 ];
+
 
 const CERTIFICATIONS: Certification[] = [
   { title: 'Meta Front-End Developer', issuer: 'Coursera', color: 'border-blue-500/50', date: '2024' },
@@ -862,6 +904,90 @@ const Skills = () => {
   );
 };
 
+
+// Auto-cycling image slider for project cards with multiple screenshots
+const ProjectImageSlider = ({ images, title, labels }: { images: string[]; title: string; labels?: string[] }) => {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => {
+      setActive(prev => (prev + 1) % images.length);
+    }, 10000);
+    return () => clearInterval(t);
+  }, [paused, images.length]);
+
+  const go = (idx: number) => {
+    if (idx === active) return;
+    setActive(idx);
+  };
+
+  return (
+    <div
+      className="relative w-full h-full"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <AnimatePresence mode="sync" initial={false}>
+        <motion.img
+          key={active}
+          src={images[active]}
+          alt={`${title} screenshot ${active + 1}`}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      </AnimatePresence>
+
+      {labels && labels[active] && (
+        <div className="absolute top-16 left-5 z-20">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`label-${active}`}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.35 }}
+              className="px-3 py-1 text-[9px] font-black tracking-widest uppercase rounded-full"
+              style={{ background: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(12px)', border: '1px solid rgba(129,140,248,0.35)', color: '#818cf8' }}
+            >
+              {labels[active]}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 z-10">
+        <motion.div
+          key={`p-${active}-${paused}`}
+          initial={{ width: '0%' }}
+          animate={{ width: paused ? '0%' : '100%' }}
+          transition={{ duration: paused ? 0 : 10, ease: 'linear' }}
+          className="h-full bg-accent-purple/70"
+        />
+      </div>
+
+      {/* Dot nav */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        {images.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => go(idx)}
+            className={cn(
+              'rounded-full transition-all duration-300',
+              active === idx ? 'w-5 h-[4px] bg-white' : 'w-[4px] h-[4px] bg-white/40 hover:bg-white/70'
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Projects = () => {
   return (
     <section id="projects" className="py-24 px-6 bg-white/[0.01]">
@@ -880,13 +1006,17 @@ const Projects = () => {
               delay={i * 0.15}
               className="glass rounded-[2rem] overflow-hidden group flex flex-col glass-hover"
             >
-              <div className="relative aspect-[16/9] bg-white/[0.03] border-b border-white/5 flex items-center justify-center overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute top-5 left-5 flex items-center gap-3">
+              <div className="relative aspect-[16/9] bg-white/[0.03] border-b border-white/5 overflow-hidden">
+                {(project as any).images?.length > 0 ? (
+                  <ProjectImageSlider images={(project as any).images} title={project.title} labels={(project as any).slideLabels} />
+                ) : (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
+                <div className="absolute top-5 left-5 z-20">
                   <div
                     className="px-3 py-1 rounded-full text-[11px] font-black tracking-widest flex items-center gap-2"
                     style={{ background: 'rgba(10,10,15,0.85)', border: `1px solid ${project.medalColor}40`, color: project.medalColor, backdropFilter: 'blur(10px)' }}
@@ -894,7 +1024,7 @@ const Projects = () => {
                     {project.medal} {project.rank}
                   </div>
                 </div>
-                <div className="absolute top-5 right-5 glass px-3 py-1 rounded-full text-[10px] font-black tracking-widest text-white">
+                <div className="absolute top-5 right-5 glass px-3 py-1 rounded-full text-[10px] font-black tracking-widest text-white z-20">
                   {project.year}
                 </div>
               </div>
@@ -944,6 +1074,7 @@ const Projects = () => {
     </section>
   );
 };
+
 
 const Certifications = () => {
   return (
