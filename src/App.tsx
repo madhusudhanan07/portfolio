@@ -402,9 +402,6 @@ const Navbar = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
                 <Github className="w-4 h-4" />
               </a>
             </div>
-            <button onClick={onResumeOpen} className="hidden sm:flex items-center gap-2 px-6 py-3 glass rounded-full text-xs font-bold tracking-widest hover:bg-white/10 transition-all text-white border border-white/5">
-              RESUME
-            </button>
           </motion.div>
           <button className="md:hidden text-white p-2 glass rounded-lg" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
