@@ -611,7 +611,7 @@ const Hero = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
 
           <Reveal y={20} duration={0.8} delay={1.0} className="mt-12 pt-8 border-t border-white/5 flex gap-10 items-center w-max">
             <div className="flex flex-col">
-              <span className="text-3xl font-black text-white">4+</span>
+              <span className="text-3xl font-black text-white">6+</span>
               <span className="text-[9px] font-bold text-gray-500 tracking-[0.2em] uppercase mt-1">Real Projects</span>
             </div>
             <div className="w-[1px] h-10 bg-white/10" />
