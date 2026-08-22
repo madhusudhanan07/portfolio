@@ -362,7 +362,7 @@ const Navbar = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
           className="text-xl font-display font-black tracking-tighter flex items-center gap-3"
         >
           <div className="w-9 h-9 bg-accent-purple rounded-full overflow-hidden flex items-center justify-center border border-white/10 shrink-0">
-            <img src="/madhu.photo.png" alt="M" className="w-full h-full object-cover" />
+            <img src="/madhu.photo.png" alt="M" className="w-full h-full object-cover object-top scale-[1.7] mt-1" />
           </div>
           <span className="hidden sm:inline text-white">MADHUSUDHANAN N A</span>
         </motion.div>
