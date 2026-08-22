@@ -398,7 +398,7 @@ const Navbar = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
               <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
+              <a href="https://github.com/madhusudhanan07" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
                 <Github className="w-4 h-4" />
               </a>
             </div>
@@ -1225,7 +1225,7 @@ const Contact = () => {
                 <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
                   <Linkedin className="w-6 h-6 text-gray-400 group-hover:text-blue-500 transition-colors" />
                 </a>
-                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
+                <a href="https://github.com/madhusudhanan07" target="_blank" rel="noopener noreferrer" className="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-white/5 transition-all duration-500 border-white/5 hover:-translate-y-1 group">
                   <Github className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
                 </a>
               </div>
