@@ -1083,15 +1083,133 @@ const Projects = () => {
 };
 
 
-const Certifications = () => {
+const CertificateModal = ({ isOpen, onClose, pdfUrl }: { isOpen: boolean; onClose: () => void; pdfUrl: string }) => {
   return (
-    <section id="certifications" className="py-24 px-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-12 bg-black/90 backdrop-blur-md"
+      onClick={onClose}
+    >
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-[110]">
+        <button 
+          onClick={onClose}
+          className="p-3 sm:p-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl hover:scale-105"
+          title="Close Preview"
+        >
+          <X className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
+      </div>
+
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-5xl aspect-[1.414/1] max-h-[85vh] bg-white rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <object 
+          data={`${pdfUrl}#toolbar=0&view=FitH`}
+          type="application/pdf"
+          className="w-full h-full rounded-2xl"
+        >
+          <div className="w-full h-full flex flex-col items-center justify-center text-black bg-white p-6 text-center rounded-2xl">
+            <p className="mb-4 text-sm tracking-widest uppercase font-bold text-gray-500">Your browser does not support inline PDF viewing.</p>
+            <a 
+              href={pdfUrl} 
+              target="_blank" 
+              rel="noreferrer"
+              className="px-6 py-3 bg-accent-purple text-white rounded-xl text-xs font-black tracking-widest uppercase hover:bg-accent-purple/80 transition-colors shadow-lg"
+            >
+              Download Certificate
+            </a>
+          </div>
+        </object>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const Certifications = () => {
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isCertModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isCertModalOpen]);
+
+  return (
+    <section id="certifications" className="py-24 px-6 relative">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
-          label="Validation"
-          title="Expertise"
+          label="Experience"
+          title="Experience & Certifications"
         />
 
+        {/* CodeAlpha Internship Card */}
+        <Reveal y={30} delay={0.1} className="mb-16">
+          <div className="glass rounded-[2rem] border border-white/5 overflow-hidden group hover:-translate-y-1 transition-all duration-500 hover:shadow-[0_20px_40px_-20px_rgba(129,140,248,0.2)]">
+            <div className="flex flex-col md:flex-row min-h-[300px]">
+              
+              {/* Left Content */}
+              <div className="p-8 md:p-12 flex-1 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5">
+                <div className="flex flex-wrap items-center gap-3 mb-8">
+                  <div className="px-3 py-1 bg-accent-purple/10 border border-accent-purple/20 rounded-full flex items-center gap-2 w-max">
+                    <Briefcase className="w-3 h-3 text-accent-purple" />
+                    <span className="text-[9px] font-bold tracking-[0.2em] text-accent-purple uppercase">Internship</span>
+                  </div>
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+                    10 July 2026 – 10 August 2026
+                  </span>
+                </div>
+                
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 tracking-tight uppercase">CodeAlpha</h3>
+                <h4 className="text-lg sm:text-xl font-bold text-gray-300 mb-6 uppercase">Full Stack Development</h4>
+                
+                <p className="text-sm text-gray-400 font-medium mb-10 max-w-md">
+                  Virtual Internship Program
+                </p>
+
+                <button 
+                  onClick={() => setIsCertModalOpen(true)}
+                  className="flex items-center gap-2 w-max px-6 py-4 sm:px-8 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] sm:text-[11px] font-black tracking-widest uppercase transition-all group-hover:border-accent-purple/30 text-white"
+                >
+                  VIEW CERTIFICATE <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </button>
+              </div>
+
+              {/* Right Thumbnail Area */}
+              <div 
+                className="w-full md:w-[40%] bg-[#0a0a0c] relative flex items-center justify-center p-8 sm:p-12 md:p-8 cursor-pointer group/thumb"
+                onClick={() => setIsCertModalOpen(true)}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-accent-purple/5 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-500" />
+                
+                <div className="relative w-full aspect-[1.414/1] rounded-xl overflow-hidden shadow-2xl border border-white/10 group-hover/thumb:scale-[1.02] transition-transform duration-500 bg-white/5">
+                  <object 
+                    data="/codealpha-certificate.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH" 
+                    type="application/pdf" 
+                    className="w-full h-full pointer-events-none opacity-90 group-hover/thumb:opacity-100 transition-opacity rounded-xl"
+                  >
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-[#0d0d10]">
+                      <FileText className="w-10 h-10 mb-2 opacity-50" />
+                      <span className="text-[10px] uppercase tracking-widest font-bold">Certificate Preview</span>
+                    </div>
+                  </object>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Existing Certifications Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {CERTIFICATIONS.map((cert, i) => (
             <Reveal
@@ -1119,6 +1237,16 @@ const Certifications = () => {
           />
         </div>
       </div>
+
+      <AnimatePresence>
+        {isCertModalOpen && (
+          <CertificateModal 
+            isOpen={isCertModalOpen} 
+            onClose={() => setIsCertModalOpen(false)} 
+            pdfUrl="/codealpha-certificate.pdf"
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };
