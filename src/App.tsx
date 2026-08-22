@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  Contact as ContactIcon,
   CheckCircle2,
   Zap,
   Download,
@@ -398,6 +399,9 @@ const Navbar = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
               <a href="https://www.linkedin.com/in/madhusudhanan-n-a-972819336" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
                 <Linkedin className="w-4 h-4" />
               </a>
+              <button onClick={onResumeOpen} className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20" title="View Resume">
+                <ContactIcon className="w-4 h-4" />
+              </button>
               <a href="https://github.com/madhusudhanan07" target="_blank" rel="noopener noreferrer" className="p-2.5 glass rounded-2xl hover:bg-white/10 transition-all text-white shadow-lg shadow-black/20">
                 <Github className="w-4 h-4" />
               </a>
@@ -598,12 +602,15 @@ const Hero = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
             </p>
           </Reveal>
 
-          <Reveal y={30} duration={0.8} delay={0.8} className="flex flex-wrap gap-6 items-center">
+          <Reveal y={30} duration={0.8} delay={0.8} className="flex flex-wrap gap-4 sm:gap-6 items-center">
             <a href="#projects" className="group relative px-10 py-5 bg-accent-purple text-surface font-black rounded-2xl overflow-hidden transition-all hover:shadow-[0_0_40px_rgba(129,140,248,0.4)]">
               <span className="relative z-10 flex items-center gap-2 text-surface font-bold">
                 VIEW PROJECTS <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </a>
+            <button onClick={onResumeOpen} className="flex items-center gap-2 px-8 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white shadow-xl shadow-black/50 group border border-white/5 hover:border-white/10">
+              VIEW RESUME <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </button>
           </Reveal>
 
           <Reveal y={20} duration={0.8} delay={1.0} className="mt-12 pt-8 border-t border-white/5 flex gap-10 items-center w-max">
@@ -1847,107 +1854,69 @@ export default function App() {
 
 // --- Professional Resume Preview Modal ---
 const ResumeModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [htmlContent, setHtmlContent] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const loadResume = async () => {
-      try {
-        const response = await fetch(`/resume.docx?v=${new Date().getTime()}`);
-        if (!response.ok) throw new Error('File not found');
-        const arrayBuffer = await response.arrayBuffer();
-        // @ts-ignore
-        const result = await window.mammoth.convertToHtml({ arrayBuffer });
-        setHtmlContent(result.value);
-      } catch (err) {
-        console.error("Failed to render resume:", err);
-        setHtmlContent("<p style='text-align: center; padding-top: 40px;'>Unable to load resume preview. Please click the close button and try downloading.</p>");
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (isOpen) loadResume();
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    setShowScrollTop(e.currentTarget.scrollTop > 400);
-  };
-
-  const scrollToTop = () => {
-    containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      ref={containerRef}
-      onScroll={handleScroll}
-      data-lenis-prevent
-      className="fixed inset-0 z-[100] bg-[#0a0a0c]/95 backdrop-blur-xl overflow-y-auto custom-scrollbar scroll-smooth h-screen w-screen"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-12 bg-black/90 backdrop-blur-md"
+      onClick={onClose}
     >
-      {/* Absolute Dynamic Controls */}
-      <div className="fixed top-8 right-8 flex gap-3 z-[110] pointer-events-auto">
-        <AnimatePresence>
-          {showScrollTop && (
-            <motion.button
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              onClick={scrollToTop}
-              className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white transition-all backdrop-blur-md shadow-2xl"
-              title="Return to Top"
-            >
-              <ChevronUp className="w-5 h-5" />
-            </motion.button>
-          )}
-        </AnimatePresence>
-        
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 flex gap-3 z-[110]">
         <a 
-          href="/resume.docx" 
-          download 
-          className="px-8 py-4 bg-accent-blue/20 hover:bg-accent-blue/30 border border-accent-blue/30 rounded-full text-white transition-all backdrop-blur-md shadow-2xl flex items-center gap-3 overflow-hidden group"
-          title="Download Original File"
+          href="/resume.pdf" 
+          download="Madhusudhanan_Resume.pdf"
+          className="px-6 py-3 sm:px-8 sm:py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white transition-all backdrop-blur-md shadow-xl hover:scale-105 flex items-center gap-2 sm:gap-3"
+          onClick={(e) => e.stopPropagation()}
         >
-          <span className="text-[10px] font-black uppercase tracking-widest">Download Resume</span>
-          <Download className="w-4 h-4" />
+          <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Download</span>
+          <span className="text-[10px] font-black uppercase tracking-widest sm:hidden">DL</span>
+          <Download className="w-4 h-4 sm:w-5 sm:h-5" />
         </a>
-
         <button 
           onClick={onClose}
-          className="p-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-full text-white transition-all backdrop-blur-md shadow-2xl"
+          className="p-3 sm:p-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl hover:scale-105"
           title="Close Preview"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       </div>
 
-      <div className="min-h-screen py-24 px-4 md:px-10 flex justify-center items-start">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-40 gap-4">
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-10 h-10 border-2 border-accent-blue border-t-transparent rounded-full"
-            />
-            <span className="text-[10px] font-black tracking-[0.3em] text-gray-500 uppercase">Generating Elite Preview...</span>
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <object 
+          data="/resume.pdf#toolbar=0&view=FitH"
+          type="application/pdf"
+          className="w-full h-full rounded-2xl"
+        >
+          <div className="w-full h-full flex flex-col items-center justify-center text-black bg-white p-6 text-center rounded-2xl">
+            <p className="mb-4 text-sm tracking-widest uppercase font-bold text-gray-500">Your browser does not support inline PDF viewing.</p>
+            <a 
+              href="/resume.pdf" 
+              target="_blank" 
+              rel="noreferrer"
+              className="px-6 py-3 bg-accent-purple text-white rounded-xl text-xs font-black tracking-widest uppercase hover:bg-accent-purple/80 transition-colors shadow-lg"
+            >
+              Open PDF
+            </a>
           </div>
-        ) : (
-          <motion.div 
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="w-full max-w-[900px] bg-white shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-lg text-black resume-content relative overflow-hidden"
-          >
-            {/* Template Header Accents */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-blue via-accent-purple to-accent-blue opacity-50" />
-            
-            <div className="p-12 sm:p-20 md:p-24" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          </motion.div>
-        )}
-      </div>
+        </object>
+      </motion.div>
     </motion.div>
   );
 };
