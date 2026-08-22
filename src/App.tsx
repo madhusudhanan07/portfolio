@@ -604,9 +604,6 @@ const Hero = ({ onResumeOpen }: { onResumeOpen: () => void }) => {
                 VIEW PROJECTS <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </a>
-            <button onClick={onResumeOpen} className="flex items-center gap-2 px-10 py-5 glass rounded-2xl text-[12px] font-black tracking-widest hover:bg-white/10 transition-all uppercase text-white shadow-xl shadow-black/50">
-              RESUME PREVIEW
-            </button>
           </Reveal>
 
           <Reveal y={20} duration={0.8} delay={1.0} className="mt-12 pt-8 border-t border-white/5 flex gap-10 items-center w-max">
